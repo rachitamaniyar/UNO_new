@@ -1,0 +1,32 @@
+UNO SPIELREGELN - Vollständige Anleitung
+
+SPIELZIEL:
+Erreiche als erster Spieler 500 Punkte über mehrere Runden.
+
+SPIELVORBEREITUNG:
+- Jeder Spieler erhält 7 Karten
+- Restliche Karten bilden den Nachziehstapel
+- Oberste Karte wird aufgedeckt (Ablegestapel)
+- Zufälliger Startspieler wird gewählt
+
+GRUNDREGELN:
+- Lege eine Karte passender Farbe oder Zahl
+- Kannst du nicht legen, ziehe eine Karte
+- Rufe "UNO" bei der vorletzten Karte!
+
+AKTIONSKARTEN:
++2 - Nächster Spieler zieht 2 Karten und setzt aus
+Aussetzen - Nächster Spieler wird übersprungen
+Richtungswechsel - Spielrichtung wird umgekehrt
+Farbwahl - Wähle eine neue Farbe
++4 - Nur bei Notlage! Nächster zieht 4 Karten
+
+STRAFEN:
+- UNO vergessen: 2 Strafkarten
+- Falsche Karte: 1 Strafkarte
+- 3 Strafen = Disqualifikation
+
+PUNKTE:
+Zahlenkarten: Nennwert
+Aktionskarten: 20 Punkte
+Spezielle Karten: 50 Punkte
