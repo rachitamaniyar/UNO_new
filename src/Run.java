@@ -14,6 +14,7 @@ public class Run {
     private boolean gameRunning;
     private boolean specialRulesEnabled;
 Scanner scanner = new Scanner(System.in);
+int testVariable;
     /**
      * Constructor for the game runner
      * @param gameSetup Initial game setup
