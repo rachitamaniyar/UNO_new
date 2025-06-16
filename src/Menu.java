@@ -136,14 +136,14 @@ public class Menu {
      * @return Selected menu option
      */
     public int showGameMenu() {
-        System.out.println("\n=== SPIEL-MENÜ ===");
-        System.out.println("1. UNO rufen");
-        System.out.println("2. Spieler herausfordern (bei +4 Karte)");
-        System.out.println("3. Punkte anzeigen");
-        System.out.println("4. Spielregeln anzeigen");
-        System.out.println("5. Zurück zum Spiel");
-        System.out.println("6. Spiel beenden");
-        System.out.print("Wähle eine Option: ");
+        System.out.println("\n=== UNO-MENU ===");
+        System.out.println("1. Call UNO");
+        System.out.println("2. Challenge for +4");
+        System.out.println("3. Show score");
+        System.out.println("4. Show Game rules");
+        System.out.println("5. Back to the current game");
+        System.out.println("6. End game");
+        System.out.print("Choose your option: ");
 
         try {
             return scanner.nextInt();

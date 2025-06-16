@@ -221,6 +221,13 @@ Scanner scanner = new Scanner(System.in);
         // Play card to discard pile
         deck.playCard(card);
         System.out.println(player.getName() + " spielt: " + card);
+        System.out.println("Do you want to end your turn? Y/N");
+        scanner.nextLine();
+        if(scanner.next().equalsIgnoreCase("N")) {
+                        menu.showGameMenu();
+                    } else if (scanner.next().equalsIgnoreCase("Y")) {
+
+
 
         // Check for UNO call
         if (player.getHandSize() == 1) {
@@ -244,6 +251,7 @@ Scanner scanner = new Scanner(System.in);
         // Check if player won the round
         if (player.getHandSize() == 0) {
             handleRoundWin(player);
+        }
         }
     }
 
