@@ -224,11 +224,16 @@ Scanner scanner = new Scanner(System.in);
 
         // Check for UNO call
         if (player.getHandSize() == 1) {
-            System.out.println("ould you like to call UNO?");
-            if (!player.hasSaidUno()) {
-                // Check if other players catch the UNO violation
-                referee.checkUnoViolation(player);
+            System.out.println("Would you like to call UNO? Y/N");
+            scanner.nextLine();
+            if (scanner.nextLine().toLowerCase().equals("y")) {
+                player.callUno();
             }
+               else {
+                    // Check if other players catch the UNO violation
+                    referee.checkUnoViolation(player);
+                }
+
         }
 
         // Handle special card effects
