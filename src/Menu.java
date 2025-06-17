@@ -21,7 +21,7 @@ public class Menu {
         System.out.println("║              UNO SPIEL               ║");
         System.out.println("║            Version 1.0               ║");
         System.out.println("║                                      ║");
-        System.out.println("║    🎮 Willkommen beim UNO Spiel! 🎮   ║");
+        System.out.println("║     Willkommen beim UNO Spiel!       ║");
         System.out.println("╚══════════════════════════════════════╝");
         System.out.println();
     }

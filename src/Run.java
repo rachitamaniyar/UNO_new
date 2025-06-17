@@ -224,7 +224,11 @@ Scanner scanner = new Scanner(System.in);
         System.out.println("Do you want to end your turn? Y/N");
         scanner.nextLine();
         if(scanner.next().equalsIgnoreCase("N")) {
-                        menu.showGameMenu();
+                        int input= menu.showGameMenu();
+                        switch (input) {
+                            case 1: player.callUno(); break;
+                            //case 2: referee.handleWildDrawFourChallenge(player, player.);
+                        }
                     } else if (scanner.next().equalsIgnoreCase("Y")) {
 
 
