@@ -131,7 +131,7 @@ public class Main {
                 if (showDetails.equals("y") || showDetails.equals("yes")) {
                     e.printStackTrace();
                 }
-                a
+
             } catch (Exception inputError) {
                 // If input fails, just print stack trace
                 e.printStackTrace();
