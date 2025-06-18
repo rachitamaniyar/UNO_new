@@ -5,324 +5,348 @@ import java.io.*;
  * Handles all menu interactions and user interface
  * Manages game menus, rule display, and player input
  */
-public class Menu {
+public class Menu implements AutoCloseable {
     private Scanner scanner;
+
+    // Constants for better maintainability
     private static final String RULES_FILE = "uno_rules.txt";
+    private static final int MIN_PLAYERS = 0;
+    private static final int MAX_PLAYERS = 4;
+    private static final int DEFAULT_PLAYERS = 1;
+    private static final int MIN_DIFFICULTY = 1;
+    private static final int MAX_DIFFICULTY = 3;
+    private static final int DEFAULT_DIFFICULTY = 2;
+    private static final int MIN_MENU_OPTION = 1;
+    private static final int MAX_MENU_OPTION = 3;
+    private static final int MIN_GAME_MENU_OPTION = 1;
+    private static final int MAX_GAME_MENU_OPTION = 6;
+    private static final double BOT_CHALLENGE_PROBABILITY = 0.3;
+
+    private static final String SEPARATOR = "=".repeat(60);
+    private static final String SHORT_SEPARATOR = "=".repeat(50);
 
     public Menu() {
         scanner = new Scanner(System.in);
     }
 
-    /**
-     * Displays the main welcome screen and ASCII art
-     */
     public void displayWelcome() {
         System.out.println("╔══════════════════════════════════════╗");
-        System.out.println("║              UNO SPIEL               ║");
-        System.out.println("║            Version 1.0               ║");
+        System.out.println("║                UNO GAME              ║");
+        System.out.println("║              Version 1.0             ║");
         System.out.println("║                                      ║");
-        System.out.println("║     Willkommen beim UNO Spiel!       ║");
+        System.out.println("║       Welcome to the UNO Game!       ║");
         System.out.println("╚══════════════════════════════════════╝");
         System.out.println();
     }
 
-    /**
-     * Shows the main menu and gets user's choice
-     * @return User's menu choice
-     */
     public int showMainMenu() {
-        System.out.println("\n=== HAUPTMENÜ ===");
-        System.out.println("1. Neues Spiel starten");
-        System.out.println("2. Spielregeln anzeigen");
-        System.out.println("3. Spiel beenden");
-        System.out.print("Wähle eine Option (1-3): ");
+        System.out.println("\n=== MAIN MENU ===");
+        System.out.println("1. Start New Game");
+        System.out.println("2. View Game Rules");
+        System.out.println("3. Exit Game");
+        System.out.print("Choose an option (1-3): ");
 
-        try {
-            return scanner.nextInt();
-        } catch (InputMismatchException e) {
-            scanner.nextLine(); // Clear invalid input
-            return 0; // Invalid choice
-        }
+        return getValidatedInput(MIN_MENU_OPTION, MAX_MENU_OPTION, 0);
     }
 
-    /**
-     * Displays game setup menu for difficulty selection
-     * @return Selected difficulty level (1-3)
-     */
     public int selectDifficulty() {
-        System.out.println("\n=== SCHWIERIGKEITSGRAD ===");
-        System.out.println("1. Leicht   - Bots spielen zufällig");
-        System.out.println("2. Mittel   - Bots bevorzugen Aktionskarten");
-        System.out.println("3. Schwer   - Bots spielen strategisch");
-        System.out.print("Wähle Schwierigkeitsgrad (1-3): ");
+        System.out.println("\n=== DIFFICULTY LEVEL ===");
+        System.out.println("1. Easy   - Bots play randomly");
+        System.out.println("2. Medium - Bots prefer action cards");
+        System.out.println("3. Hard   - Bots play strategically");
+        System.out.print("Choose difficulty level (1-3): ");
 
-        try {
-            int choice = scanner.nextInt();
-            return (choice >= 1 && choice <= 3) ? choice : 2; // Default to medium
-        } catch (InputMismatchException e) {
-            scanner.nextLine();
-            return 2; // Default to medium
+        int choice = getValidatedInput(MIN_DIFFICULTY, MAX_DIFFICULTY, DEFAULT_DIFFICULTY);
+        if (choice == DEFAULT_DIFFICULTY && choice != getLastInputAttempt()) {
+            System.out.println("Invalid input! Default: Medium difficulty selected");
         }
+        return choice;
     }
 
-    /**
-     * Gets the number of human players
-     * @return Number of human players (0-4)
-     */
     public int getNumberOfHumanPlayers() {
-        System.out.println("\n=== SPIELERANZAHL ===");
-        System.out.println("Es spielen immer genau 4 Spieler.");
-        System.out.println("Wie viele menschliche Spieler? (0-4)");
-        System.out.print("Anzahl: ");
+        System.out.println("\n=== PLAYER COUNT ===");
+        System.out.println("There are always 4 players in total.");
+        System.out.println("How many human players? (0-4)");
+        System.out.print("Number: ");
 
-        try {
-            int humans = scanner.nextInt();
-            if (humans >= 0 && humans <= 4) {
-                return humans;
-            } else {
-                System.out.println("Ungültige Anzahl! Standard: 1 menschlicher Spieler");
-                return 1;
-            }
-        } catch (InputMismatchException e) {
-            scanner.nextLine();
-            System.out.println("Ungültige Eingabe! Standard: 1 menschlicher Spieler");
-            return 1;
+        int humans = getValidatedInput(MIN_PLAYERS, MAX_PLAYERS, DEFAULT_PLAYERS);
+        if (humans == DEFAULT_PLAYERS && humans != getLastInputAttempt()) {
+            System.out.println("Invalid input! Default: 1 human player");
         }
+        return humans;
     }
 
-    /**
-     * Gets player names from user input
-     * @param numberOfPlayers Number of human players
-     * @return Array of player names
-     */
     public String[] getPlayerNames(int numberOfPlayers) {
+        if (numberOfPlayers <= 0) {
+            return new String[0];
+        }
+
         String[] names = new String[numberOfPlayers];
-        scanner.nextLine(); // Clear the newline from previous input
+        clearInputBuffer();
 
-        System.out.println("\n=== SPIELERNAMEN ===");
+        System.out.println("\n=== PLAYER NAMES ===");
         for (int i = 0; i < numberOfPlayers; i++) {
-            String name;
-            do {
-                System.out.print("Name für Spieler " + (i + 1) + ": ");
-                name = scanner.nextLine().trim();
-                if (name.isEmpty()) {
-                    System.out.println("Name darf nicht leer sein! Bitte erneut eingeben.");
-                }
-            } while (name.isEmpty()); // Loop until valid name is entered
-
-            names[i] = name;
+            names[i] = getValidPlayerName(i + 1);
         }
 
         return names;
     }
 
-    /**
-     * Asks if player wants to add special rules
-     * @return true if special rules should be enabled
-     */
+    private String getValidPlayerName(int playerNumber) {
+        String name;
+        do {
+            System.out.print("Name for player " + playerNumber + ": ");
+            name = scanner.nextLine().trim();
+            if (name.isEmpty()) {
+                System.out.println("Name cannot be empty! Please try again.");
+            } else if (name.length() > 20) {
+                System.out.println("Name too long! Maximum 20 characters allowed.");
+                name = "";
+            }
+        } while (name.isEmpty());
+
+        return name;
+    }
+
     public boolean askForSpecialRules() {
-        System.out.println("\n=== SPEZIALREGELN ===");
-        System.out.println("Möchtest du Spezialregeln aktivieren?");
-        System.out.println("Verfügbare Regeln: Doppeln, Kumulieren, Jump-In");
-        System.out.println("(Diese Features sind noch in Entwicklung)");
-        System.out.print("Spezialregeln aktivieren? (j/n): ");
+        System.out.println("\n=== SPECIAL RULES ===");
+        System.out.println("Would you like to enable special rules?");
+        System.out.println("Available: Stacking, Doubling, Jump-In");
+        System.out.println("(These features are still in development)");
+        System.out.print("Enable special rules? (y/n): ");
 
-        String input = scanner.next().toLowerCase();
-        return input.equals("j") || input.equals("ja") || input.equals("y") || input.equals("yes");
+        return getYesNoInput();
     }
 
-    /**
-     * Shows the in-game menu during play
-     * @return Selected menu option
-     */
     public int showGameMenu() {
-        System.out.println("\n=== UNO-MENU ===");
+        System.out.println("\n=== UNO MENU ===");
         System.out.println("1. Call UNO");
-        System.out.println("2. Challenge for +4");
-        System.out.println("3. Show score");
-        System.out.println("4. Show Game rules");
-        System.out.println("5. Back to the current game");
-        System.out.println("6. End game");
-        System.out.print("Choose your option: ");
+        System.out.println("2. Challenge +4");
+        System.out.println("3. Show Scores");
+        System.out.println("4. View Rules");
+        System.out.println("5. Return to Game");
+        System.out.println("6. Quit Game");
+        System.out.print("Choose an option (1-6): ");
 
-        try {
-            return scanner.nextInt();
-        } catch (InputMismatchException e) {
-            scanner.nextLine();
-            return 5; // Return to game
-        }
+        return getValidatedInput(MIN_GAME_MENU_OPTION, MAX_GAME_MENU_OPTION, 5);
     }
 
-    /**
-     * Displays the game rules from external file
-     * If the file doesn't exist, shows basic rules
-     */
     public void displayRules() {
-        System.out.println("\n" + "=".repeat(50));
-        System.out.println("                UNO SPIELREGELN");
-        System.out.println("=".repeat(50));
+        System.out.println("\n" + SHORT_SEPARATOR);
+        System.out.println("                UNO GAME RULES");
+        System.out.println(SHORT_SEPARATOR);
 
         try {
-            // Try to read rules from external file
-            File rulesFile = new File(RULES_FILE);
-            if (rulesFile.exists()) {
-                Scanner fileScanner = new Scanner(rulesFile);
-                while (fileScanner.hasNextLine()) {
-                    System.out.println(fileScanner.nextLine());
-                }
-                fileScanner.close();
+            if (loadRulesFromFile()) {
+                System.out.println("\n💡 Tip: Rules loaded from " + RULES_FILE + "!");
             } else {
-                // Display basic rules if file doesn't exist
                 displayBasicRules();
-                System.out.println("\n💡 Tipp: Erstelle eine Datei '" + RULES_FILE +
-                        "' für ausführliche Spielregeln!");
+                System.out.println("\n💡 Tip: Create a file named '" + RULES_FILE +
+                        "' for detailed game rules!");
             }
         } catch (IOException e) {
-            System.out.println("Fehler beim Lesen der Regelndatei: " + e.getMessage());
+            System.out.println("⚠️ Error reading rules file: " + e.getMessage());
             displayBasicRules();
         }
 
-        System.out.println("\n" + "=".repeat(50));
-        System.out.print("Drücke Enter zum Fortfahren...");
-        scanner.nextLine();
-        if (scanner.hasNextLine()) {
-            scanner.nextLine(); // Wait for user input
+        System.out.println("\n" + SHORT_SEPARATOR);
+        waitForUserInput("Press Enter to continue...");
+    }
+
+    private boolean loadRulesFromFile() throws IOException {
+        File rulesFile = new File(RULES_FILE);
+        if (!rulesFile.exists()) {
+            return false;
         }
-    }
 
-    /**
-     * Displays basic UNO rules when external file is not available
-     */
-    private void displayBasicRules() {
-        System.out.println("🎯 SPIELZIEL:");
-        System.out.println("   Erreiche als erster 500 Punkte!");
-        System.out.println();
-        System.out.println("🃏 GRUNDREGELN:");
-        System.out.println("   • Lege Karten passender Farbe oder Zahl");
-        System.out.println("   • Rufe 'UNO' bei der vorletzten Karte!");
-        System.out.println("   • Ziehe eine Karte wenn du nicht legen kannst");
-        System.out.println();
-        System.out.println("🎴 AKTIONSKARTEN:");
-        System.out.println("   • +2: Nächster Spieler zieht 2 Karten");
-        System.out.println("   • ⏭️ Aussetzen: Nächster Spieler wird übersprungen");
-        System.out.println("   • 🔄 Richtungswechsel: Spielrichtung umkehren");
-        System.out.println("   • 🎨 Farbwahl: Wähle eine neue Farbe");
-        System.out.println("   • +4: Nächster Spieler zieht 4, nur bei Notlage!");
-        System.out.println();
-        System.out.println("⚖️ STRAFEN:");
-        System.out.println("   • UNO vergessen: 2 Strafkarten");
-        System.out.println("   • Falsche Karte: 1 Strafkarte");
-        System.out.println("   • 3 Strafen = Disqualifikation");
-    }
-
-    /**
-     * Displays current game state
-     * @param players All players
-     * @param currentPlayer Current player
-     * @param topCard Current top card
-     * @param direction Game direction
-     */
-    public void displayGameState(List<Player> players, Player currentPlayer, Card topCard, int direction) {
-        System.out.println("\n" + "=".repeat(60));
-        System.out.println("🎮 AKTUELLER SPIELSTAND");
-        System.out.println("=".repeat(60));
-
-        // Show current card
-        System.out.println("🃏 Aktuelle Karte: " + topCard);
-
-        // Show direction
-        String directionArrow = (direction == 1) ? "➡️" : "⬅️";
-        System.out.println("🔄 Spielrichtung: " + directionArrow);
-
-        // Show current player
-        System.out.println("👤 Am Zug: " + currentPlayer.getName());
-
-        // Show all players and their card counts
-        System.out.println("\n📊 SPIELER-ÜBERSICHT:");
-        for (Player player : players) {
-            String indicator = (player == currentPlayer) ? "👉 " : "   ";
-            String botIndicator = (player instanceof BotPlayer) ? "🤖 " : "👤 ";
-            System.out.printf("%s%s%s: %d Karten",
-                    indicator, botIndicator, player.getName(), player.getHandSize());
-
-            if (player.getHandSize() == 1) {
-                System.out.print(" 🚨 UNO!");
+        try (Scanner fileScanner = new Scanner(rulesFile)) {
+            while (fileScanner.hasNextLine()) {
+                System.out.println(fileScanner.nextLine());
             }
-            System.out.println();
         }
-        System.out.println("=".repeat(60));
+        return true;
     }
 
-    /**
-     * Asks player if they want to challenge a Wild Draw Four
-     * @param challengingPlayer The player who can challenge
-     * @param playedByPlayer The player who played Wild Draw Four
-     * @return true if player wants to challenge
-     */
+    private void displayBasicRules() {
+        System.out.println("🎯 OBJECTIVE:");
+        System.out.println("   Be the first to reach 500 points!");
+        System.out.println();
+        System.out.println("🃏 BASIC RULES:");
+        System.out.println("   • Match cards by color or number");
+        System.out.println("   • Call 'UNO' when you have one card left!");
+        System.out.println("   • Draw a card if you can't play");
+        System.out.println();
+        System.out.println("🎴 ACTION CARDS:");
+        System.out.println("   • +2: Next player draws 2 cards");
+        System.out.println("   • ⏭️ Skip: Next player loses a turn");
+        System.out.println("   • 🔄 Reverse: Change play direction");
+        System.out.println("   • 🎨 Wild: Choose a new color");
+        System.out.println("   • +4: Next player draws 4 (only play when you have no match!)");
+        System.out.println();
+        System.out.println("⚖️ PENALTIES:");
+        System.out.println("   • Forgot UNO: Draw 2 penalty cards");
+        System.out.println("   • Illegal play: Draw 1 penalty card");
+        System.out.println("   • 3 penalties = disqualification");
+    }
+
+    public void displayGameState(List<Player> players, Player currentPlayer, Card topCard, int direction) {
+        System.out.println("\n" + SEPARATOR);
+        System.out.println("🎮 CURRENT GAME STATE");
+        System.out.println(SEPARATOR);
+
+        displayCurrentCard(topCard);
+        displayDirection(direction);
+        displayCurrentPlayer(currentPlayer);
+        displayPlayerOverview(players, currentPlayer);
+
+        System.out.println(SEPARATOR);
+    }
+
+    private void displayCurrentCard(Card topCard) {
+        System.out.println("🃏 Top Card: " + topCard);
+    }
+
+    private void displayDirection(int direction) {
+        String directionArrow = (direction == 1) ? "➡️" : "⬅️";
+        System.out.println("🔄 Play Direction: " + directionArrow);
+    }
+
+    private void displayCurrentPlayer(Player currentPlayer) {
+        System.out.println("👤 Current Turn: " + currentPlayer.getName());
+    }
+
+    private void displayPlayerOverview(List<Player> players, Player currentPlayer) {
+        System.out.println("\n📊 PLAYER OVERVIEW:");
+        for (Player player : players) {
+            displayPlayerInfo(player, player == currentPlayer);
+        }
+    }
+
+    private void displayPlayerInfo(Player player, boolean isCurrent) {
+        String indicator = isCurrent ? "👉 " : "   ";
+        String botIndicator = (player instanceof BotPlayer) ? "🤖 " : "👤 ";
+        System.out.printf("%s%s%s: %d cards",
+                indicator, botIndicator, player.getName(), player.getHandSize());
+
+        if (player.getHandSize() == 1) {
+            System.out.print(" 🚨 UNO!");
+        }
+        System.out.println();
+    }
+
     public boolean askForChallenge(Player challengingPlayer, Player playedByPlayer) {
         if (challengingPlayer instanceof BotPlayer) {
-            // Bots have a 30% chance to challenge
-            boolean challenge = Math.random() < 0.3;
+            boolean challenge = Math.random() < BOT_CHALLENGE_PROBABILITY;
             if (challenge) {
-                System.out.println(challengingPlayer.getName() + " zweifelt " +
-                        playedByPlayer.getName() + " an!");
+                System.out.println("🤖 " + challengingPlayer.getName() + " is challenging " +
+                        playedByPlayer.getName() + "!");
+                waitForUserInput("Press Enter to continue...");
             }
             return challenge;
         }
 
-        System.out.println("\n⚠️ " + playedByPlayer.getName() + " hat eine +4 Karte gespielt!");
-        System.out.println(challengingPlayer.getName() + ", möchtest du ihn herausfordern?");
-        System.out.println("(Nur wenn du glaubst, dass er eine passende Karte hatte)");
-        System.out.print("Herausfordern? (j/n): ");
+        System.out.println("\n⚠️ " + playedByPlayer.getName() + " played a +4 Wild Draw card!");
+        System.out.println(challengingPlayer.getName() + ", do you want to challenge?");
+        System.out.println("(Only if you think they had a playable card)");
+        System.out.print("Challenge? (y/n): ");
 
-        String input = scanner.next().toLowerCase();
-        return input.equals("j") || input.equals("ja");
+        return getYesNoInput();
     }
 
-    /**
-     * Confirms if player wants to quit the game
-     * @return true if player wants to quit
-     */
     public boolean confirmQuit() {
-        System.out.print("\nMöchtest du das Spiel wirklich beenden? (j/n): ");
-        String input = scanner.next().toLowerCase();
-        return input.equals("j") || input.equals("ja");
+        System.out.print("\n⚠️ Are you sure you want to quit the game? (y/n): ");
+        return getYesNoInput();
     }
 
-    /**
-     * Shows final game results
-     * @param winner The winning player
-     * @param players All players
-     */
     public void displayGameResults(Player winner, List<Player> players) {
-        System.out.println("\n" + "=".repeat(60));
-        System.out.println("🎉 SPIELENDE - ENDERGEBNIS 🎉");
-        System.out.println("=".repeat(60));
+        System.out.println("\n" + SEPARATOR);
+        System.out.println("🎉 GAME OVER - FINAL RESULTS 🎉");
+        System.out.println(SEPARATOR);
 
-        System.out.println("🏆 GEWINNER: " + winner.getName() +
-                " mit " + winner.getTotalScore() + " Punkten!");
+        displayWinner(winner);
+        displayFinalScores(players);
 
-        System.out.println("\n📊 ENDSTAND:");
-        // Sort players by score
+        System.out.println(SEPARATOR);
+        System.out.println("Thanks for playing! 🎮");
+        waitForUserInput("Press Enter to exit...");
+    }
+
+    private void displayWinner(Player winner) {
+        System.out.println("🏆 WINNER: " + winner.getName() +
+                " with " + winner.getTotalScore() + " points!");
+    }
+
+    private void displayFinalScores(List<Player> players) {
+        System.out.println("\n📊 FINAL SCORES:");
         List<Player> sortedPlayers = new ArrayList<>(players);
         sortedPlayers.sort((p1, p2) -> Integer.compare(p2.getTotalScore(), p1.getTotalScore()));
 
         for (int i = 0; i < sortedPlayers.size(); i++) {
             Player player = sortedPlayers.get(i);
-            String medal = "";
-            switch (i) {
-                case 0: medal = "🥇"; break;
-                case 1: medal = "🥈"; break;
-                case 2: medal = "🥉"; break;
-                default: medal = "   "; break;
-            }
-
+            String medal = getMedal(i);
             String botIndicator = (player instanceof BotPlayer) ? "🤖" : "👤";
-            System.out.printf("%s %s %s: %d Punkte\n",
+
+            System.out.printf("%s %s %s: %d points\n",
                     medal, botIndicator, player.getName(), player.getTotalScore());
         }
+    }
 
-        System.out.println("=".repeat(60));
-        System.out.println("Danke fürs Spielen! 🎮");
+    private String getMedal(int position) {
+        return switch (position) {
+            case 0 -> "🥇";
+            case 1 -> "🥈";
+            case 2 -> "🥉";
+            default -> "   ";
+        };
+    }
+
+    private int getValidatedInput(int min, int max, int defaultValue) {
+        try {
+            int input = scanner.nextInt();
+            return (input >= min && input <= max) ? input : defaultValue;
+        } catch (InputMismatchException e) {
+            clearInputBuffer();
+            return defaultValue;
+        }
+    }
+
+    private boolean getYesNoInput() {
+        String input = scanner.next().toLowerCase().trim();
+        return input.equals("y") || input.equals("yes") || input.equals("j") || input.equals("ja");
+    }
+
+    private void clearInputBuffer() {
+        scanner.nextLine();
+    }
+
+    private void waitForUserInput(String message) {
+        System.out.print(message);
+        clearInputBuffer();
+        if (scanner.hasNextLine()) {
+            scanner.nextLine();
+        }
+    }
+
+    private int getLastInputAttempt() {
+        return -1; // Placeholder
+    }
+
+    public void displayError(String message) {
+        System.out.println("❌ Error: " + message);
+    }
+
+    public void displaySuccess(String message) {
+        System.out.println("✅ " + message);
+    }
+
+    public void displayInfo(String message) {
+        System.out.println("ℹ️ " + message);
+    }
+
+    @Override
+    public void close() {
+        if (scanner != null) {
+            scanner.close();
+        }
     }
 }
