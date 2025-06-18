@@ -10,19 +10,21 @@ public class Player {
     protected int totalScore;           // Total score across all rounds
     protected int penaltyCount;         // Number of penalties received
     protected boolean saidUno;          // Whether player said UNO
-    protected Scanner scanner;          // For input (only used by human players)
+    protected static Scanner scanner = new Scanner(System.in); // Shared scanner to avoid resource conflicts
 
     /**
      * Constructor for creating a new player
      * @param name The player's name
      */
     public Player(String name) {
-        this.name = name;
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Player name cannot be null or empty");
+        }
+        this.name = name.trim();
         this.hand = new ArrayList<>();  // ArrayList implements List interface
         this.totalScore = 0;
         this.penaltyCount = 0;
         this.saidUno = false;
-        this.scanner = new Scanner(System.in);
     }
 
     /**
@@ -30,6 +32,9 @@ public class Player {
      * @param card The card to add
      */
     public void addCard(Card card) {
+        if (card == null) {
+            throw new IllegalArgumentException("Cannot add null card to hand");
+        }
         hand.add(card);
         // Reset UNO flag when getting a new card
         if (hand.size() > 1) {
@@ -44,7 +49,15 @@ public class Player {
      */
     public Card playCard(int index) {
         if (index >= 0 && index < hand.size()) {
-            return hand.remove(index); // remove(index) returns the removed element
+            Card playedCard = hand.remove(index);
+
+            // Check if player should call UNO after playing
+            if (hand.size() == 1 && !saidUno) {
+                System.out.println(name + " hat vergessen UNO zu rufen!");
+                // Could add penalty here if needed
+            }
+
+            return playedCard;
         }
         return null;
     }
@@ -68,19 +81,38 @@ public class Player {
      * @return The index of the chosen card, or -1 to draw a card
      */
     public int getCardChoice(Card topCard) {
-        System.out.println("\nAktuelle Karte: " + topCard);
-        displayHand();
-        System.out.print("Wähle eine Karte (Nummer eingeben): ");
+        int maxAttempts = 3;
+        int attempts = 0;
 
-        try {
-            int choice = scanner.nextInt();
-            return choice - 1; // Convert to 0-based index (-1 for draw card option)
-        } catch (InputMismatchException e) {
-            // Handle invalid input (non-integer)
-            scanner.nextLine(); // Clear the invalid input
-            System.out.println("Ungültige Eingabe! Bitte eine Nummer eingeben.");
-            return getCardChoice(topCard); // Recursive call to try again
+        while (attempts < maxAttempts) {
+            try {
+                System.out.println("\nAktuelle Karte: " + topCard);
+                displayHand();
+                System.out.print("Wähle eine Karte (Nummer eingeben): ");
+
+                int choice = scanner.nextInt();
+                scanner.nextLine(); // Clear the newline character
+
+                // Validate choice range
+                if (choice == 0) {
+                    return -1; // Draw card
+                } else if (choice >= 1 && choice <= hand.size()) {
+                    return choice - 1; // Convert to 0-based index
+                } else {
+                    System.out.println("Ungültige Auswahl! Bitte eine Nummer zwischen 0 und " + hand.size() + " eingeben.");
+                    attempts++;
+                }
+
+            } catch (InputMismatchException e) {
+                // Handle invalid input (non-integer)
+                scanner.nextLine(); // Clear the invalid input
+                System.out.println("Ungültige Eingabe! Bitte eine Nummer eingeben.");
+                attempts++;
+            }
         }
+
+        System.out.println("Zu viele ungültige Versuche. Karte wird automatisch gezogen.");
+        return -1; // Default to drawing a card
     }
 
     /**
@@ -88,29 +120,39 @@ public class Player {
      * @return The chosen color
      */
     public CardColor chooseColor() {
-        System.out.println("\nWähle eine Farbe:");
-        System.out.println("1. Rot");
-        System.out.println("2. Gelb");
-        System.out.println("3. Grün");
-        System.out.println("4. Blau");
-        System.out.print("Deine Wahl: ");
+        int maxAttempts = 3;
+        int attempts = 0;
 
-        try {
-            int choice = scanner.nextInt();
-            switch (choice) {
-                case 1: return CardColor.RED;
-                case 2: return CardColor.YELLOW;
-                case 3: return CardColor.GREEN;
-                case 4: return CardColor.BLUE;
-                default:
-                    System.out.println("Ungültige Wahl! Rot wird automatisch gewählt.");
-                    return CardColor.RED;
+        while (attempts < maxAttempts) {
+            try {
+                System.out.println("\nWähle eine Farbe:");
+                System.out.println("1. Rot");
+                System.out.println("2. Gelb");
+                System.out.println("3. Grün");
+                System.out.println("4. Blau");
+                System.out.print("Deine Wahl: ");
+
+                int choice = scanner.nextInt();
+                scanner.nextLine(); // Clear the newline character
+
+                switch (choice) {
+                    case 1: return CardColor.RED;
+                    case 2: return CardColor.YELLOW;
+                    case 3: return CardColor.GREEN;
+                    case 4: return CardColor.BLUE;
+                    default:
+                        System.out.println("Ungültige Wahl! Bitte 1-4 eingeben.");
+                        attempts++;
+                }
+            } catch (InputMismatchException e) {
+                scanner.nextLine();
+                System.out.println("Ungültige Eingabe! Bitte eine Nummer eingeben.");
+                attempts++;
             }
-        } catch (InputMismatchException e) {
-            scanner.nextLine();
-            System.out.println("Ungültige Eingabe! Rot wird automatisch gewählt.");
-            return CardColor.RED;
         }
+
+        System.out.println("Zu viele ungültige Versuche. Rot wird automatisch gewählt.");
+        return CardColor.RED;
     }
 
     /**
@@ -121,6 +163,18 @@ public class Player {
             saidUno = true;
             System.out.println(name + " ruft: UNO!");
         }
+    }
+
+    /**
+     * Checks if player forgot to call UNO and applies penalty if needed
+     * @return true if penalty was applied
+     */
+    public boolean checkUnoViolation() {
+        if (hand.size() == 1 && !saidUno) {
+            System.out.println(name + " hat vergessen UNO zu rufen und muss 2 Karten ziehen!");
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -143,12 +197,29 @@ public class Player {
      * @return true if player has a playable card
      */
     public boolean hasPlayableCard(Card topCard) {
+        if (topCard == null) return false;
+
         for (Card card : hand) {
             if (card.canPlayOn(topCard)) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Gets all playable cards from hand
+     * @param topCard The current top card
+     * @return List of indices of playable cards
+     */
+    public List<Integer> getPlayableCardIndices(Card topCard) {
+        List<Integer> playableIndices = new ArrayList<>();
+        for (int i = 0; i < hand.size(); i++) {
+            if (hand.get(i).canPlayOn(topCard)) {
+                playableIndices.add(i);
+            }
+        }
+        return playableIndices;
     }
 
     /**
@@ -167,15 +238,28 @@ public class Player {
         return penaltyCount >= 3;
     }
 
+    /**
+     * Checks if player's hand is empty (won the round)
+     * @return true if hand is empty
+     */
+    public boolean hasWon() {
+        return hand.isEmpty();
+    }
+
     // Getter and setter methods
     public String getName() { return name; }
-    public List<Card> getHand() { return hand; }
+    public List<Card> getHand() { return new ArrayList<>(hand); } // Return copy to prevent external modification
     public int getHandSize() { return hand.size(); }
     public int getTotalScore() { return totalScore; }
     public boolean hasSaidUno() { return saidUno; }
     public int getPenaltyCount() { return penaltyCount; }
 
-    public void addScore(int points) { totalScore += points; }
+    public void addScore(int points) {
+        if (points >= 0) {
+            totalScore += points;
+        }
+    }
+
     public void setSaidUno(boolean saidUno) { this.saidUno = saidUno; }
     public void resetPenalties() { penaltyCount = 0; }
 
@@ -185,5 +269,10 @@ public class Player {
     public void clearHand() {
         hand.clear();
         saidUno = false;
+    }
+
+    @Override
+    public String toString() {
+        return name + " (Karten: " + hand.size() + ", Punkte: " + totalScore + ")";
     }
 }
