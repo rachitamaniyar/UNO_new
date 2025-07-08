@@ -33,7 +33,7 @@ public class Player {
      */
     public void addCard(Card card) {
         if (card == null) {
-            throw new IllegalArgumentException("Cannot add 'null' card to hand");
+            throw new IllegalArgumentException("Cannot add null card to hand");
         }
         hand.add(card);
         // Reset UNO flag when getting a new card
@@ -77,8 +77,8 @@ public class Player {
 
     /**
      * Gets the player's choice for which card to play
+     *
      * @param topCard The current top card for reference
-     * @return The index of the chosen card, or -1 to draw a card
      */
     public int getCardChoice(Card topCard) {
         int maxAttempts = 3;

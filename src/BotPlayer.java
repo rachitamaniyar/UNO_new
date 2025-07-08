@@ -34,6 +34,7 @@ public class BotPlayer extends Player {
      * @param topCard Current top card on discard pile
      * @return Index of card to play, or -1 to draw
      */
+
     @Override
     public int getCardChoice(Card topCard) {
         System.out.println("\n It's " + name + "'s turn.");
@@ -63,12 +64,13 @@ public class BotPlayer extends Player {
         int chosenIndex = selectCardByDifficulty(playableCards, topCard);
 
         // Auto-call UNO if down to one card
+        // Check hand.size() BEFORE playing the card. If it's 2, it will be 1 after playing.
         if (hand.size() == 2) { // Will be 1 after playing this card
             callUno();
         }
 
-        if (playableCards.isEmpty()) {
-            System.out.println(name + " draws a card.");
+        System.out.println(name + " plays: " + hand.get(chosenIndex));
+        return chosenIndex;
     }
 
     /**

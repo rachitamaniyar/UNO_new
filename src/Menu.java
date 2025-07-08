@@ -312,7 +312,8 @@ public class Menu implements AutoCloseable {
 
     private boolean getYesNoInput() {
         String input = scanner.next().toLowerCase().trim();
-        return input.equals("y") || input.equals("yes") || input.equals("j") || input.equals("ja");
+        return input.equalsIgnoreCase("y") || input.equalsIgnoreCase("yes")
+                || input.equalsIgnoreCase("j") || input.equalsIgnoreCase("ja");
     }
 
     private void clearInputBuffer() {
