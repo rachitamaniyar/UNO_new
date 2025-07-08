@@ -36,7 +36,7 @@ public class BotPlayer extends Player {
      */
     @Override
     public int getCardChoice(Card topCard) {
-        System.out.println("\n" + name + " ist am Zug...");
+        System.out.println("\n It's " + name + "'s turn.");
 
         // Simulate thinking time
         try {
@@ -55,7 +55,7 @@ public class BotPlayer extends Player {
         }
 
         if (playableCards.isEmpty()) {
-            System.out.println(name + " zieht eine Karte.");
+            System.out.println(name + " draws a card.");
             return -1; // Draw a card
         }
 
@@ -67,8 +67,8 @@ public class BotPlayer extends Player {
             callUno();
         }
 
-        System.out.println(name + " spielt: " + hand.get(chosenIndex));
-        return chosenIndex;
+        if (playableCards.isEmpty()) {
+            System.out.println(name + " draws a card.");
     }
 
     /**
@@ -156,7 +156,7 @@ public class BotPlayer extends Player {
             }
         }
 
-        System.out.println(name + " wählt die Farbe: " + mostCommon);
+        System.out.println(name + " chooses a color: " + mostCommon);
         return mostCommon;
     }
 

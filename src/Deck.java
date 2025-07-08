@@ -109,7 +109,7 @@ public class Deck {
         shuffleDeck();              // Shuffle the new draw pile
         discardPile.push(topCard);  // Put the top card back on discard pile
 
-        System.out.println("Nachziehstapel war leer. Ablegestapel wurde neu gemischt!");
+        System.out.println("No more cards to draw - so the discard pile has been reshuffled!");
     }
 
     /**
@@ -146,7 +146,7 @@ public class Deck {
 
         if (firstCard != null) {
             playCard(firstCard);
-            System.out.println("Startkarte: " + firstCard);
+            System.out.println("Starting card: " + firstCard);
         }
     }
 

@@ -153,7 +153,7 @@ public class Run {
                     System.out.print("Do you want to play the drawn card (" + drawnCard + ")? (y/n): ");
                     String choice = scanner.nextLine().toLowerCase().trim();
 
-                    if (choice.equals("y") || choice.equals("yes")) {
+                    if (choice.equalsIgnoreCase("y") || choice.equalsIgnoreCase("yes")) {
                         playDrawnCard(player, drawnCard);
                     }
                 }
@@ -163,6 +163,7 @@ public class Run {
         }
     }
 
+    // hier müsste noch die Variante mit (no) ergänzt werden, falls nicht schon geschehen
     private void handleDrawCard(Player player) {
         Card drawnCard = deck.drawCard();
         if (drawnCard != null) {
@@ -180,7 +181,7 @@ public class Run {
                     System.out.print("Do you want to play it? (y/n): ");
                     String choice = scanner.nextLine().toLowerCase().trim();
 
-                    if (choice.equals("y") || choice.equals("yes")) {
+                    if (choice.equalsIgnoreCase("y") || choice.equalsIgnoreCase("yes")) {
                         playDrawnCard(player, drawnCard);
                     }
                 }
@@ -221,16 +222,17 @@ public class Run {
         }
     }
 
+    // yes / no varianten vollständig?
     private void playCard(Player player, Card card) {
         deck.playCard(card);
         System.out.println(player.getName() + " plays: " + card);
 
         // Prompt to end turn early
-        System.out.println("Do you want to end your turn? Y/N");
+        System.out.println("Do you want to end your turn? (y/n)");
         scanner.nextLine(); // Consume newline
         String input = scanner.nextLine().trim().toLowerCase();
 
-        if (input.equals("n") || input.equals("no")) {
+        if (input.equalsIgnoreCase("n") || input.equalsIgnoreCase("no")) {
             int menuChoice = menu.showGameMenu();
             switch (menuChoice) {
                 case 1:
@@ -245,7 +247,7 @@ public class Run {
             if (!(player instanceof BotPlayer)) {
                 System.out.print("Do you want to call UNO? (y/n): ");
                 String unoChoice = scanner.nextLine().trim().toLowerCase();
-                if (unoChoice.equals("y") || unoChoice.equals("yes")) {
+                if (unoChoice.equalsIgnoreCase("y") || unoChoice.equalsIgnoreCase("yes")) {
                     player.callUno();
                 } else {
                     referee.checkUnoViolation(player);
@@ -270,7 +272,7 @@ public class Run {
         if (!(player instanceof BotPlayer)) {
             System.out.print("End turn? (y/n): ");
             String endTurn = scanner.nextLine().trim().toLowerCase();
-            if (endTurn.equals("n") || endTurn.equals("no")) {
+            if (endTurn.equalsIgnoreCase("n") || endTurn.equalsIgnoreCase("no")) {
                 menu.showGameMenu();
             }
         }
@@ -289,7 +291,7 @@ public class Run {
 
             case REVERSE:
                 direction = SpecialCards.processReverse(direction);
-                System.out.println("Play direction changed!");
+                System.out.println("Play direction reversed!");
                 break;
 
             case SKIP:

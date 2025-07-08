@@ -203,16 +203,16 @@ public class Menu implements AutoCloseable {
     }
 
     private void displayCurrentCard(Card topCard) {
-        System.out.println("🃏 Top Card: " + topCard);
+        System.out.println("🃏 Top card: " + topCard);
     }
 
     private void displayDirection(int direction) {
         String directionArrow = (direction == 1) ? "➡️" : "⬅️";
-        System.out.println("🔄 Play Direction: " + directionArrow);
+        System.out.println("🔄 Play direction: " + directionArrow);
     }
 
     private void displayCurrentPlayer(Player currentPlayer) {
-        System.out.println("👤 Current Turn: " + currentPlayer.getName());
+        System.out.println("👤 Current turn: " + currentPlayer.getName());
     }
 
     private void displayPlayerOverview(List<Player> players, Player currentPlayer) {

@@ -33,7 +33,7 @@ public class Player {
      */
     public void addCard(Card card) {
         if (card == null) {
-            throw new IllegalArgumentException("Cannot add null card to hand");
+            throw new IllegalArgumentException("Cannot add 'null' card to hand");
         }
         hand.add(card);
         // Reset UNO flag when getting a new card
@@ -53,7 +53,7 @@ public class Player {
 
             // Check if player should call UNO after playing
             if (hand.size() == 1 && !saidUno) {
-                System.out.println(name + " hat vergessen UNO zu rufen!");
+                System.out.println(name + " forgot to call UNO!");
                 // Could add penalty here if needed
             }
 
@@ -67,12 +67,12 @@ public class Player {
      * Only shows the actual cards to the current player
      */
     public void displayHand() {
-        System.out.println("\n" + name + "'s Karten:");
+        System.out.println("\n" + name + "'s cards:");
         for (int i = 0; i < hand.size(); i++) {
             // Using printf for formatted output: %d = integer, %s = string
             System.out.printf("%d. %s\n", i + 1, hand.get(i));
         }
-        System.out.println("0. Karte ziehen");
+        System.out.println("0. Draw a card");
     }
 
     /**
@@ -86,9 +86,9 @@ public class Player {
 
         while (attempts < maxAttempts) {
             try {
-                System.out.println("\nAktuelle Karte: " + topCard);
+                System.out.println("\nCurrent card: " + topCard);
                 displayHand();
-                System.out.print("Wähle eine Karte (Nummer eingeben): ");
+                System.out.print("Choose a card (enter number): ");
 
                 int choice = scanner.nextInt();
                 scanner.nextLine(); // Clear the newline character
@@ -99,19 +99,19 @@ public class Player {
                 } else if (choice >= 1 && choice <= hand.size()) {
                     return choice - 1; // Convert to 0-based index
                 } else {
-                    System.out.println("Ungültige Auswahl! Bitte eine Nummer zwischen 0 und " + hand.size() + " eingeben.");
+                    System.out.println("Invalid choice! Please enter a number between 0 and " + hand.size() + " eingeben.");
                     attempts++;
                 }
 
             } catch (InputMismatchException e) {
                 // Handle invalid input (non-integer)
                 scanner.nextLine(); // Clear the invalid input
-                System.out.println("Ungültige Eingabe! Bitte eine Nummer eingeben.");
+                System.out.println("Invalid input! Please enter a number.");
                 attempts++;
             }
         }
 
-        System.out.println("Zu viele ungültige Versuche. Karte wird automatisch gezogen.");
+        System.out.println("Too many invalid attempts. A penalty card will be drawn automatically.");
         return -1; // Default to drawing a card
     }
 
@@ -125,12 +125,12 @@ public class Player {
 
         while (attempts < maxAttempts) {
             try {
-                System.out.println("\nWähle eine Farbe:");
-                System.out.println("1. Rot");
-                System.out.println("2. Gelb");
-                System.out.println("3. Grün");
-                System.out.println("4. Blau");
-                System.out.print("Deine Wahl: ");
+                System.out.println("\nChoose a color: ");
+                System.out.println("1. Red");
+                System.out.println("2. Yellow");
+                System.out.println("3. Green");
+                System.out.println("4. Blue");
+                System.out.print("Your choice: ");
 
                 int choice = scanner.nextInt();
                 scanner.nextLine(); // Clear the newline character
@@ -141,17 +141,17 @@ public class Player {
                     case 3: return CardColor.GREEN;
                     case 4: return CardColor.BLUE;
                     default:
-                        System.out.println("Ungültige Wahl! Bitte 1-4 eingeben.");
+                        System.out.println("Invalid input! Please enter a number between 1 and 4.");
                         attempts++;
                 }
             } catch (InputMismatchException e) {
                 scanner.nextLine();
-                System.out.println("Ungültige Eingabe! Bitte eine Nummer eingeben.");
+                System.out.println("Invalid input! Please enter a number.");
                 attempts++;
             }
         }
 
-        System.out.println("Zu viele ungültige Versuche. Rot wird automatisch gewählt.");
+        System.out.println("Too many invalid attempts. Red will be selected automatically.");
         return CardColor.RED;
     }
 
@@ -161,7 +161,7 @@ public class Player {
     public void callUno() {
         if (hand.size() == 1) {
             saidUno = true;
-            System.out.println(name + " ruft: UNO!");
+            System.out.println(name + " calls: UNO!");
         }
     }
 
@@ -171,7 +171,7 @@ public class Player {
      */
     public boolean checkUnoViolation() {
         if (hand.size() == 1 && !saidUno) {
-            System.out.println(name + " hat vergessen UNO zu rufen und muss 2 Karten ziehen!");
+            System.out.println(name + " forgot to call UNO and must draw 2 cards!");
             return true;
         }
         return false;
@@ -227,7 +227,7 @@ public class Player {
      */
     public void addPenalty() {
         penaltyCount++;
-        System.out.println(name + " erhält eine Strafe! (Gesamt: " + penaltyCount + ")");
+        System.out.println(name + "  receives a penalty! (Total: " + penaltyCount + ")");
     }
 
     /**
@@ -273,6 +273,6 @@ public class Player {
 
     @Override
     public String toString() {
-        return name + " (Karten: " + hand.size() + ", Punkte: " + totalScore + ")";
+        return name + " (Cards: " + hand.size() + ", Points: " + totalScore + ")";
     }
 }
