@@ -9,7 +9,8 @@ public class Main {
     private static final Scanner scanner = new Scanner(System.in);
 
     // Menu handler instance for user interaction
-    private static final Menu menu = new Menu();
+    // No longer a static fiel here, as it will be passed on to showMainMenu & other methods
+    // private static final Menu menu = new Menu();
 
     // Flag to control the main application loop
     private static boolean gameRunning = true;
@@ -22,10 +23,14 @@ public class Main {
         System.out.println("🎮 Welcome to UNO!");
         System.out.println("=================");
 
+        // Create a single Menu instance to be passed around
+        Menu gameMenu = new Menu(scanner); //  Initialize gameMenu
+
         // Main loop continues until the player chooses to exit
         while (gameRunning) {
             try {
-                showMainMenu();
+                // Passing the gameMenu to showMainMenu
+                showMainMenu(gameMenu);
             } catch (Exception e) {
                 System.err.println("An unexpected error occurred: " + e.getMessage());
                 System.out.println("The game will continue...\n");
@@ -34,18 +39,22 @@ public class Main {
 
         // Close scanner before exiting to release resources
         scanner.close();
+        gameMenu.close();
         System.out.println("Program ended. Goodbye!");
     }
 
     /**
      * Displays the main menu and handles user input.
      */
-    private static void showMainMenu() {
+    // Added Menu parameter
+    private static void showMainMenu(Menu menu) {
+        // the menu object now handles the input via its internal scanner
         int choice = menu.showMainMenu();
 
         switch (choice) {
             case 1:
-                runGameSessionLoop(); // Start one or more game sessions
+                // Passing menu here too
+                runGameSessionLoop(menu); // Start one or more game sessions
                 break;
             case 2:
                 menu.displayRules(); // Show game rules
@@ -63,28 +72,32 @@ public class Main {
 
     /**
      * Handles playing multiple rounds in one session if the user chooses to play again.
+     * @param menu The Menu instance for game interactions.
      */
-    private static void runGameSessionLoop() {
+    // Added menu parameter
+    private static void runGameSessionLoop(Menu menu) {
         boolean playAgain;
 
         // Loop for replaying the game as long as the player wants
         do {
-            playAgain = startNewGame();
+            // passed menu here too
+            playAgain = startNewGame(menu);
         } while (playAgain);
     }
 
     /**
      * Starts a new UNO game session.
      * Initializes the game and manages error handling.
-     *
+     * @param menu The Menu instance for game interactions.
      * @return true if the player wants to play again, false otherwise.
      */
-    private static boolean startNewGame() {
+    private static boolean startNewGame(Menu menu) {
         try {
             System.out.println("\n🚀 Starting a new game...");
 
             // Game initialization: players, deck, etc.
-            Initialization initialization = new Initialization();
+            // Passed the shared scanner tp Initialization constructor
+            Initialization initialization = new Initialization(scanner);
             Initialization.GameSetup gameSetup = initialization.initializeGame();
 
             // Handle failed initialization
@@ -106,7 +119,8 @@ public class Main {
             }
 
             // Run the actual game
-            Run gameRunner = new Run(gameSetup);
+            // Pass scanner AND the menu to Run constructor
+            Run gameRunner = new Run(gameSetup, scanner, menu);
             gameRunner.runGame();
 
             // Ask if the player wants to play another game
@@ -143,13 +157,13 @@ public class Main {
         return false; // On error or invalid input, return to main menu
     }
 
-    /**
-     * Provides access to the shared Scanner instance.
-     * Useful for consistent input handling across the application.
-     *
-     * @return the shared Scanner instance.
-     */
-    public static Scanner getScanner() {
-        return scanner;
-    }
+//    /**
+//     * Provides access to the shared Scanner instance.
+//     * Useful for consistent input handling across the application.
+//     *
+//     * @return the shared Scanner instance.
+//     */
+//    public static Scanner getScanner() {
+//        return scanner;
+//    }
 }

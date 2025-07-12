@@ -9,9 +9,15 @@ public class Initialization {
     private List<Player> players;
     private Deck deck;
     private int difficulty;
+    // [NEW] Reference to the shared scanner
+    private Scanner scanner;
 
-    public Initialization() {
-        menu = new Menu();
+    // [MODIFIED] Constructor now receives the scanner
+    public Initialization(Scanner scanner) {
+        // [NEW] Store scanner reference
+        this.scanner = scanner;
+        // [MODIFIED] Instantiate Menu object with the passed scanner
+        menu = new Menu(this.scanner);
         players = new ArrayList<>();
     }
 
@@ -54,6 +60,7 @@ public class Initialization {
         // Get names for human players
         String[] humanNames = new String[0];
         if (numberOfHumans > 0) {
+            // (MODIFIED) menu.getPlayerNames() the menu intern scanner
             humanNames = menu.getPlayerNames(numberOfHumans);
         }
 

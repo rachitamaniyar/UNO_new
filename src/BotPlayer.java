@@ -29,13 +29,12 @@ public class BotPlayer extends Player {
         return botNames[index % botNames.length];
     }
 
+    // only left in BotPlayer
     /**
      * Bot's automatic card selection logic
      * @param topCard Current top card on discard pile
      * @return Index of card to play, or -1 to draw
      */
-
-    @Override
     public int getCardChoice(Card topCard) {
         System.out.println("\n It's " + name + "'s turn.");
 
@@ -66,10 +65,13 @@ public class BotPlayer extends Player {
         // Auto-call UNO if down to one card
         // Check hand.size() BEFORE playing the card. If it's 2, it will be 1 after playing.
         if (hand.size() == 2) { // Will be 1 after playing this card
+            // the Bot-specific Logic "Forget" is in the overwritten callUNO()
+            // the callUNO() sets the flag according to the bot-logic
             callUno();
         }
 
-        System.out.println(name + " plays: " + hand.get(chosenIndex));
+        // (REMOVED) the print of the turn - should be in RUN after the actual card has been playes
+        // System.out.println(name + " plays: " + hand.get(chosenIndex));
         return chosenIndex;
     }
 
@@ -132,7 +134,6 @@ public class BotPlayer extends Player {
      * Bot's automatic color selection for wild cards
      * Chooses based on the most common color in hand
      */
-    @Override
     public CardColor chooseColor() {
         // Count colors in hand
         Map<CardColor, Integer> colorCount = new HashMap<>();
@@ -142,35 +143,47 @@ public class BotPlayer extends Player {
         colorCount.put(CardColor.BLUE, 0);
 
         for (Card card : hand) {
+            // (MODIFIED)
             if (card.getColor() != CardColor.BLACK) {
                 colorCount.put(card.getColor(), colorCount.get(card.getColor()) + 1);
             }
         }
 
+        // (MODIFIED)
         // Find the most common color
         CardColor mostCommon = CardColor.RED;
-        int maxCount = 0;
+        int maxCount = -1; // starting with -1, to also process 0-count colours
 
-        for (Map.Entry<CardColor, Integer> entry : colorCount.entrySet()) {
-            if (entry.getValue() > maxCount) {
-                maxCount = entry.getValue();
-                mostCommon = entry.getKey();
+        // if the hand is empty or holds only wild-cards, chose a colour randomly
+        if (hand.isEmpty() || colorCount.values().stream().allMatch(count -> count == 0)) {
+            CardColor[] colors = {CardColor.RED, CardColor.YELLOW, CardColor.GREEN, CardColor.BLUE};
+            mostCommon = colors[random.nextInt(colors.length)];
+        } else {
+            for (Map.Entry<CardColor, Integer> entry : colorCount.entrySet()) {
+                if (entry.getValue() > maxCount) {
+                    maxCount = entry.getValue();
+                    mostCommon = entry.getKey();
+                }
             }
         }
-
         System.out.println(name + " chooses a color: " + mostCommon);
         return mostCommon;
     }
 
-    /**
-     * Bot automatically calls UNO when appropriate
-     */
-    @Override
-    public void callUno() {
-        super.callUno();
-        // Bots have a small chance to forget UNO call based on difficulty
-        if (difficulty == 1 && random.nextInt(10) == 0) { // 10% chance for easy bots
-            saidUno = false; // "Forget" to call UNO
+        /**
+         * Bot automatically calls UNO when appropriate
+         * Includes a chance for easy bots to forget
+         */
+        @Override
+        public void callUno() {
+            // super.callUno();
+            // Bots have a small chance to forget UNO call based on difficulty
+            if (hand.size() == 1) { // only apply if just 1 card is left
+                boolean shouldForget = false;
+                if (difficulty == 1 && random.nextInt(10) == 0) { // 10% chance for easy bots
+                    shouldForget = true;
+                }
+                super.setSaidUno(!shouldForget); // sets the flag according to the Forget-Logic
+            }
         }
     }
-}

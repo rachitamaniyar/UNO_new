@@ -10,7 +10,9 @@ public class Player {
     protected int totalScore;           // Total score across all rounds
     protected int penaltyCount;         // Number of penalties received
     protected boolean saidUno;          // Whether player said UNO
-    protected static Scanner scanner = new Scanner(System.in); // Shared scanner to avoid resource conflicts
+
+    // (REMOVED) - Scanner does not anymore belong directly into the Players-Class
+   // protected static Scanner scanner = new Scanner(System.in); // Shared scanner to avoid resource conflicts
 
     /**
      * Constructor for creating a new player
@@ -48,18 +50,22 @@ public class Player {
      * @return The removed card, or null if index is invalid
      */
     public Card playCard(int index) {
-        if (index >= 0 && index < hand.size()) {
-            Card playedCard = hand.remove(index);
-
-            // Check if player should call UNO after playing
-            if (hand.size() == 1 && !saidUno) {
-                System.out.println(name + " forgot to call UNO!");
-                // Could add penalty here if needed
-            }
-
-            return playedCard;
+        // (MODIFIED) Better Exception-Handling (instead of returning null)
+        if (index < 0 || index >= hand.size()) {
+            throw new IndexOutOfBoundsException("Invalid card index: " + index);
         }
-        return null;
+        Card playedCard = hand.remove(index);
+
+        // [REMOVED] The UNO check does not belong here.
+        // It should occur after a successful card play,
+        // either in the Run class or the Referee class.
+// if (hand.size() == 1 && !saidUno) {
+//     System.out.println(name + " forgot to call UNO!");
+//     // Could add penalty here if needed
+// }
+
+
+        return playedCard;
     }
 
     /**
@@ -72,91 +78,101 @@ public class Player {
             // Using printf for formatted output: %d = integer, %s = string
             System.out.printf("%d. %s\n", i + 1, hand.get(i));
         }
-        System.out.println("0. Draw a card");
+        System.out.println("0. Draw a card"); // Option to draw is for ONLY human players
     }
 
-    /**
-     * Gets the player's choice for which card to play
-     *
-     * @param topCard The current top card for reference
-     */
-    public int getCardChoice(Card topCard) {
-        int maxAttempts = 3;
-        int attempts = 0;
+//    /**
+//     * Gets the player's choice for which card to play
+//     *
+//     * @param topCard The current top card for reference
+//     */
+    // [REMOVED] The getCardChoice() method does not belong in the Player class.
+    // It handles player interaction and should be managed by the RUN class
+    // or a HumanPlayer subclass (which we don't have) using the central scanner.
+//    public int getCardChoice(Card topCard) {
+//        int maxAttempts = 3;
+//        int attempts = 0;
+//
+//        while (attempts < maxAttempts) {
+//            try {
+//                System.out.println("\nCurrent card: " + topCard);
+//                displayHand();
+//                System.out.print("Choose a card (enter number): ");
+//
+//                int choice = scanner.nextInt();
+//                scanner.nextLine(); // Clear the newline character
+//
+//                // Validate choice range
+//                if (choice == 0) {
+//                    return -1; // Draw card
+//                } else if (choice >= 1 && choice <= hand.size()) {
+//                    return choice - 1; // Convert to 0-based index
+//                } else {
+//                    System.out.println("Invalid choice! Please enter a number between 0 and " + hand.size() + " eingeben.");
+//                    attempts++;
+//                }
+//
+//            } catch (InputMismatchException e) {
+//                // Handle invalid input (non-integer)
+//                scanner.nextLine(); // Clear the invalid input
+//                System.out.println("Invalid input! Please enter a number.");
+//                attempts++;
+//            }
+//        }
+//
+//        System.out.println("Too many invalid attempts. A penalty card will be drawn automatically.");
+//        return -1; // Default to drawing a card
+//    }
 
-        while (attempts < maxAttempts) {
-            try {
-                System.out.println("\nCurrent card: " + topCard);
-                displayHand();
-                System.out.print("Choose a card (enter number): ");
 
-                int choice = scanner.nextInt();
-                scanner.nextLine(); // Clear the newline character
-
-                // Validate choice range
-                if (choice == 0) {
-                    return -1; // Draw card
-                } else if (choice >= 1 && choice <= hand.size()) {
-                    return choice - 1; // Convert to 0-based index
-                } else {
-                    System.out.println("Invalid choice! Please enter a number between 0 and " + hand.size() + " eingeben.");
-                    attempts++;
-                }
-
-            } catch (InputMismatchException e) {
-                // Handle invalid input (non-integer)
-                scanner.nextLine(); // Clear the invalid input
-                System.out.println("Invalid input! Please enter a number.");
-                attempts++;
-            }
-        }
-
-        System.out.println("Too many invalid attempts. A penalty card will be drawn automatically.");
-        return -1; // Default to drawing a card
-    }
-
-    /**
-     * Asks player to choose a color for wild cards
-     * @return The chosen color
-     */
-    public CardColor chooseColor() {
-        int maxAttempts = 3;
-        int attempts = 0;
-
-        while (attempts < maxAttempts) {
-            try {
-                System.out.println("\nChoose a color: ");
-                System.out.println("1. Red");
-                System.out.println("2. Yellow");
-                System.out.println("3. Green");
-                System.out.println("4. Blue");
-                System.out.print("Your choice: ");
-
-                int choice = scanner.nextInt();
-                scanner.nextLine(); // Clear the newline character
-
-                switch (choice) {
-                    case 1: return CardColor.RED;
-                    case 2: return CardColor.YELLOW;
-                    case 3: return CardColor.GREEN;
-                    case 4: return CardColor.BLUE;
-                    default:
-                        System.out.println("Invalid input! Please enter a number between 1 and 4.");
-                        attempts++;
-                }
-            } catch (InputMismatchException e) {
-                scanner.nextLine();
-                System.out.println("Invalid input! Please enter a number.");
-                attempts++;
-            }
-        }
-
-        System.out.println("Too many invalid attempts. Red will be selected automatically.");
-        return CardColor.RED;
-    }
+    // [REMOVED] The chooseColor() method does not belong in the Player class.
+    // It handles player interaction and should be managed by the Run class
+    // or a HumanPlayer subclass (which we dont have) using the central scanner,
+    // by calling the Menu.chooseColor(scanner) method.
+//    /**
+//     * Asks player to choose a color for wild cards
+//     * @return The chosen color
+//     */
+//    public CardColor chooseColor() {
+//        int maxAttempts = 3;
+//        int attempts = 0;
+//
+//        while (attempts < maxAttempts) {
+//            try {
+//                System.out.println("\nChoose a color: ");
+//                System.out.println("1. Red");
+//                System.out.println("2. Yellow");
+//                System.out.println("3. Green");
+//                System.out.println("4. Blue");
+//                System.out.print("Your choice: ");
+//
+//                int choice = scanner.nextInt();
+//                scanner.nextLine(); // Clear the newline character
+//
+//                switch (choice) {
+//                    case 1: return CardColor.RED;
+//                    case 2: return CardColor.YELLOW;
+//                    case 3: return CardColor.GREEN;
+//                    case 4: return CardColor.BLUE;
+//                    default:
+//                        System.out.println("Invalid input! Please enter a number between 1 and 4.");
+//                        attempts++;
+//                }
+//            } catch (InputMismatchException e) {
+//                scanner.nextLine();
+//                System.out.println("Invalid input! Please enter a number.");
+//                attempts++;
+//            }
+//        }
+//
+//        System.out.println("Too many invalid attempts. Red will be selected automatically.");
+//        return CardColor.RED;
+//    }
 
     /**
      * Handles the UNO call when player has one card left
+     * This method simply updates the internal state.
+     * The actual "call" output and penalty check happen in the game logic (Run/Referee).
      */
     public void callUno() {
         if (hand.size() == 1) {
@@ -170,11 +186,14 @@ public class Player {
      * @return true if penalty was applied
      */
     public boolean checkUnoViolation() {
-        if (hand.size() == 1 && !saidUno) {
-            System.out.println(name + " forgot to call UNO and must draw 2 cards!");
-            return true;
-        }
-        return false;
+        // [MODIFIED] Method is now purely a validation function
+        // Output and penalty should be handled in Referee or Run
+//        if (hand.size() == 1 && !saidUno) {
+//            System.out.println(name + " forgot to call UNO and must draw 2 cards!");
+//            return true;
+//        }
+//        return false;
+        return hand.size() == 1 && !saidUno;
     }
 
     /**

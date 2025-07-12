@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 /**
  * Handles the logic for special action cards
  * Contains methods for each special card type's behavior
@@ -53,9 +55,10 @@ public class SpecialCards {
      * Processes Wild card effects
      * @param player The player who played the wild card
      * @param wildCard The wild card (to set its color)
+     * @param chosenColor The color chosen by the player
      */
-    public static void processWild(Player player, Card wildCard) {
-        CardColor chosenColor = player.chooseColor();
+    public static void processWild(Player player, Card wildCard, CardColor chosenColor) {
+        // Die Farbe wurde bereits in Run ermittelt und übergeben.
         wildCard.setColor(chosenColor);
         System.out.println("🎨 " + player.getName() + " chooses " + chosenColor + " as new color!");
     }
@@ -66,10 +69,11 @@ public class SpecialCards {
      * @param targetPlayer The next player who must draw
      * @param wildDrawFour The card (to set its color)
      * @param deck The game deck
+     * @param chosenColor The color chosen by the player
      */
-    public static void processWildDrawFour(Player player, Player targetPlayer, Card wildDrawFour, Deck deck) {
-        // First, let player choose color
-        CardColor chosenColor = player.chooseColor();
+    public static void processWildDrawFour(Player player, Player targetPlayer, Card wildDrawFour, Deck deck, CardColor chosenColor) {
+        // (REMOVED) First, let player choose color
+        // CardColor chosenColor = player.chooseColor();
         wildDrawFour.setColor(chosenColor);
         System.out.println("🎨 " + player.getName() + " chooses " + chosenColor + " as new color!");
 
@@ -107,10 +111,12 @@ public class SpecialCards {
      * @param startingPlayerIndex The player who would go first
      * @param players All players in the game
      * @param deck The game deck
+     * @param menu The shared Menu instance (for human color choice) // NEUER PARAMETER
+     * @param scanner The shared Scanner instance (for human color choice) // NEUER PARAMETER
      * @return Adjusted starting direction and player info
      */
     public static GameStartInfo handleStartingSpecialCard(Card firstCard, int startingPlayerIndex,
-                                                          Player[] players, Deck deck) {
+                                                          Player[] players, Deck deck, Menu menu, Scanner scanner) {
         GameStartInfo info = new GameStartInfo();
         info.direction = 1; // Default direction
         info.currentPlayerIndex = startingPlayerIndex;
@@ -118,7 +124,8 @@ public class SpecialCards {
         switch (firstCard.getType()) {
             case DRAW_TWO:
                 System.out.println("⚠️ Starting card is a Draw Two! The first player must draw 2 cards!");
-                processDrawTwo(players[startingPlayerIndex], deck);
+                // (MODIFIED) processDrawTwo(players[startingPlayerIndex], deck);
+                deck.drawCards(players[startingPlayerIndex], 2);
                 info.skipFirstPlayer = true;
                 break;
 
@@ -133,11 +140,22 @@ public class SpecialCards {
                 break;
 
             case WILD:
-                // First player chooses color
-                CardColor color = players[startingPlayerIndex].chooseColor();
-                firstCard.setColor(color);
-                System.out.println("🎨 " + players[startingPlayerIndex].getName() +
-                        " chooses " + color + " as the starting color!");
+//                // First player chooses color
+//                CardColor color = players[startingPlayerIndex].chooseColor();
+//                firstCard.setColor(color);
+//                System.out.println("🎨 " + players[startingPlayerIndex].getName() +
+//                        " chooses " + color + " as the starting color!");
+                // GEÄNDERT: Ermittelt Farbe abhängig vom Spielertyp
+                Player affectedPlayer = players[startingPlayerIndex];
+                CardColor chosenColor;
+                if (affectedPlayer instanceof BotPlayer) {
+                    chosenColor = ((BotPlayer) affectedPlayer).chooseColor();
+                } else {
+                    chosenColor = menu.chooseColor(scanner);
+                }
+                firstCard.setColor(chosenColor);
+                System.out.println("🎨 " + affectedPlayer.getName() +
+                        " chooses " + chosenColor + " as the starting color!");
                 break;
 
             case WILD_DRAW_FOUR:

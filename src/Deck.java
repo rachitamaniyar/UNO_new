@@ -86,6 +86,23 @@ public class Deck {
     }
 
     /**
+     * Zieht eine bestimmte Anzahl von Karten und fügt sie der Hand eines Spielers hinzu.
+     * @param player Der Spieler, der die Karten erhält.
+     * @param numCards Die Anzahl der zu ziehenden Karten.
+     */
+    public void drawCards(Player player, int numCards) {
+        for (int i = 0; i < numCards; i++) {
+            Card drawnCard = drawCard(); // Ruft die bestehende drawCard() Methode auf
+            if (drawnCard != null) {
+                player.addCard(drawnCard);
+            } else {
+                System.out.println("No more cards to draw from the deck.");
+                break; // Deck ist leer, keine weiteren Karten ziehen
+            }
+        }
+    }
+
+    /**
      * Reshuffles the discard pile back into the draw pile
      * Keeps the top card of discard pile as the current card
      */

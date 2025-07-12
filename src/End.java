@@ -1,13 +1,17 @@
 import java.util.*;
+import java.util.Scanner; // NEW - ADDED
 
 /**
  * Handles game ending, final scoring, and cleanup
  */
 public class End {
-    private Menu menu;
 
-    public End() {
-        menu = new Menu();
+    private Menu menu; // the menu object
+    private Scanner scanner; // NEW - ADDED
+
+    public End(Scanner sharedScanner) {
+        this.scanner = sharedScanner;
+        this.menu = new Menu(this.scanner);
     }
 
     /**
