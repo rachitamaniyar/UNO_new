@@ -20,13 +20,20 @@ public class Menu implements AutoCloseable {
     private static final int MAX_MENU_OPTION = 3;
     private static final int MIN_GAME_MENU_OPTION = 1;
     private static final int MAX_GAME_MENU_OPTION = 6;
+    // we don't use that atm, but ok
     private static final double BOT_CHALLENGE_PROBABILITY = 0.3;
 
     private static final String SEPARATOR = "=".repeat(60);
     private static final String SHORT_SEPARATOR = "=".repeat(50);
 
-    public Menu() {
-        scanner = new Scanner(System.in);
+//   REMOVE
+//    public Menu() {
+//        scanner = new Scanner(System.in);
+//    }
+
+    // Konstruktor für den geteilten Scanner aus der Main
+    public Menu(Scanner scanner) {
+        this.scanner = scanner;
     }
 
     public void displayWelcome() {
@@ -46,6 +53,7 @@ public class Menu implements AutoCloseable {
         System.out.println("3. Exit Game");
         System.out.print("Choose an option (1-3): ");
 
+        // getValidatedInput has been adapted, so to use nextLine() and to loop
         return getValidatedInput(MIN_MENU_OPTION, MAX_MENU_OPTION, 0);
     }
 
@@ -56,11 +64,14 @@ public class Menu implements AutoCloseable {
         System.out.println("3. Hard   - Bots play strategically");
         System.out.print("Choose difficulty level (1-3): ");
 
-        int choice = getValidatedInput(MIN_DIFFICULTY, MAX_DIFFICULTY, DEFAULT_DIFFICULTY);
-        if (choice == DEFAULT_DIFFICULTY && choice != getLastInputAttempt()) {
-            System.out.println("Invalid input! Default: Medium difficulty selected");
-        }
-        return choice;
+        // getValidatedInput has been adapted, the if-loop isn't needed anymore
+        // since the validation takes place in the method itself now
+//        int choice = getValidatedInput(MIN_DIFFICULTY, MAX_DIFFICULTY, DEFAULT_DIFFICULTY);
+//       if (choice == DEFAULT_DIFFICULTY && choice != getLastInputAttempt()) {
+//            System.out.println("Invalid input! Default: Medium difficulty selected");
+//        }
+//        return choice;
+        return getValidatedInput(MIN_DIFFICULTY, MAX_DIFFICULTY, DEFAULT_DIFFICULTY);
     }
 
     public int getNumberOfHumanPlayers() {
@@ -69,11 +80,14 @@ public class Menu implements AutoCloseable {
         System.out.println("How many human players? (0-4)");
         System.out.print("Number: ");
 
-        int humans = getValidatedInput(MIN_PLAYERS, MAX_PLAYERS, DEFAULT_PLAYERS);
-        if (humans == DEFAULT_PLAYERS && humans != getLastInputAttempt()) {
-            System.out.println("Invalid input! Default: 1 human player");
-        }
-        return humans;
+        // getValidatedInput has been adapted, the if-loop isn't needed anymore
+        // since the validation takes place in the method itself now
+//        int humans = getValidatedInput(MIN_PLAYERS, MAX_PLAYERS, DEFAULT_PLAYERS);
+//        if (humans == DEFAULT_PLAYERS && humans != getLastInputAttempt()) {
+//            System.out.println("Invalid input! Default: 1 human player");
+//        }
+//        return humans;
+        return getValidatedInput(MIN_PLAYERS, MAX_PLAYERS, DEFAULT_PLAYERS);
     }
 
     public String[] getPlayerNames(int numberOfPlayers) {
@@ -82,7 +96,8 @@ public class Menu implements AutoCloseable {
         }
 
         String[] names = new String[numberOfPlayers];
-        clearInputBuffer();
+//        clearInputBuffer(); -- No longer necessary, since all input methods use nextLine()
+//        and no leftover data in the buffer is to be expected.
 
         System.out.println("\n=== PLAYER NAMES ===");
         for (int i = 0; i < numberOfPlayers; i++) {
@@ -115,6 +130,7 @@ public class Menu implements AutoCloseable {
         System.out.println("(These features are still in development)");
         System.out.print("Enable special rules? (y/n): ");
 
+        // (MODIFIED) getYesNoInput was adjusted to use nextLine() and to loop
         return getYesNoInput();
     }
 
@@ -128,7 +144,50 @@ public class Menu implements AutoCloseable {
         System.out.println("6. Quit Game");
         System.out.print("Choose an option (1-6): ");
 
+        // [MODIFIED] getValidatedInput was adjusted to use nextLine() and to loop
         return getValidatedInput(MIN_GAME_MENU_OPTION, MAX_GAME_MENU_OPTION, 5);
+    }
+
+    // (NEW)
+    // Menu needs this method as RUN now expects it to come from here
+    /**
+     * Asks player to choose a color for wild cards.
+     * This method is specifically for human players, as bots have their own logic.
+     * @param scanner The shared Scanner instance for input.
+     * @return The chosen color.
+     */
+    public CardColor chooseColor(Scanner scanner) {
+        int maxAttempts = 3;
+        int attempts = 0;
+
+        while (attempts < maxAttempts) {
+            try {
+                System.out.println("\nChoose a color: ");
+                System.out.println("1. Red");
+                System.out.println("2. Yellow");
+                System.out.println("3. Green");
+                System.out.println("4. Blue");
+                System.out.print("Your choice: ");
+
+                String inputLine = scanner.nextLine().trim();
+                int choice = Integer.parseInt(inputLine);
+
+                switch (choice) {
+                    case 1: return CardColor.RED;
+                    case 2: return CardColor.YELLOW;
+                    case 3: return CardColor.GREEN;
+                    case 4: return CardColor.BLUE;
+                    default:
+                        System.out.println("Invalid input! Please enter a number between 1 and 4.");
+                        attempts++;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input! Please enter a number.");
+                attempts++;
+            }
+        }
+        System.out.println("Too many invalid attempts. Red will be selected automatically.");
+        return CardColor.RED;
     }
 
     public void displayRules() {
@@ -203,16 +262,16 @@ public class Menu implements AutoCloseable {
     }
 
     private void displayCurrentCard(Card topCard) {
-        System.out.println("🃏 Top Card: " + topCard);
+        System.out.println("🃏 Top card: " + topCard);
     }
 
     private void displayDirection(int direction) {
         String directionArrow = (direction == 1) ? "➡️" : "⬅️";
-        System.out.println("🔄 Play Direction: " + directionArrow);
+        System.out.println("🔄 Play direction: " + directionArrow);
     }
 
     private void displayCurrentPlayer(Player currentPlayer) {
-        System.out.println("👤 Current Turn: " + currentPlayer.getName());
+        System.out.println("👤 Current turn: " + currentPlayer.getName());
     }
 
     private void displayPlayerOverview(List<Player> players, Player currentPlayer) {
@@ -228,6 +287,9 @@ public class Menu implements AutoCloseable {
         System.out.printf("%s%s%s: %d cards",
                 indicator, botIndicator, player.getName(), player.getHandSize());
 
+        // [NEEDS OPTIMIZATION] UNO display only if it's a human or explicitly requested
+        // Bots should manage their UNO status internally and not necessarily display
+        // it publicly unless they explicitly call it.
         if (player.getHandSize() == 1) {
             System.out.print(" 🚨 UNO!");
         }
@@ -250,11 +312,13 @@ public class Menu implements AutoCloseable {
         System.out.println("(Only if you think they had a playable card)");
         System.out.print("Challenge? (y/n): ");
 
+        // [MODIFIED] getYesNoInput was adjusted to use nextLine() and to loop
         return getYesNoInput();
     }
 
     public boolean confirmQuit() {
         System.out.print("\n⚠️ Are you sure you want to quit the game? (y/n): ");
+        // [MODIFIED] getYesNoInput was adjusted to use nextLine() and to loop
         return getYesNoInput();
     }
 
@@ -268,6 +332,7 @@ public class Menu implements AutoCloseable {
 
         System.out.println(SEPARATOR);
         System.out.println("Thanks for playing! 🎮");
+        // (MODIFIED) waitForUserInput should work now
         waitForUserInput("Press Enter to exit...");
     }
 
@@ -300,36 +365,80 @@ public class Menu implements AutoCloseable {
         };
     }
 
+    // [MODIFIED] This method was completely revised to use nextLine()
+    // and to implement a loop for valid input
     private int getValidatedInput(int min, int max, int defaultValue) {
-        try {
-            int input = scanner.nextInt();
-            return (input >= min && input <= max) ? input : defaultValue;
-        } catch (InputMismatchException e) {
-            clearInputBuffer();
-            return defaultValue;
+//        try {
+//            int input = scanner.nextInt();
+//            return (input >= min && input <= max) ? input : defaultValue;
+//        } catch (InputMismatchException e) {
+//            clearInputBuffer();
+//            return defaultValue;
+//        }
+        int input = defaultValue; // Initialize with default value
+        boolean isValid = false;
+        while (!isValid) {
+            String inputLine = scanner.nextLine().trim(); // Read full line & trim whitespace
+
+            if (inputLine.isEmpty()) { // If Enter is pressed without input
+                if (defaultValue != -1) { // -1 could indicate "no default"; otherwise apply default
+                    isValid = true;
+                    input = defaultValue;
+                } else {
+                    System.out.printf("Input required. Please enter a number between %d and %d: ", min, max);
+                }
+            } else {
+                try {
+                    input = Integer.parseInt(inputLine);
+                    if (input >= min && input <= max) {
+                        isValid = true; // Valid input
+                    } else {
+                        System.out.printf("Invalid input. Please enter a number between %d and %d: ", min, max);
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.printf("Invalid format. Please enter a number between %d and %d: ", min, max);
+                }
+            }
+        }
+        return input;
+
+    }
+
+    // [MODIFIED] This method was completely revised to use nextLine() and to implement
+    // a loop for valid input
+    public boolean getYesNoInput() {
+        while(true) { // a loop until there is a valid input
+            String input = scanner.nextLine().trim().toLowerCase();
+            if (input.equalsIgnoreCase("y") || input.equalsIgnoreCase("yes")
+                    || input.equalsIgnoreCase("j") || input.equalsIgnoreCase("ja")) {
+                return true;
+            } else if (input.equals("n") || input.equals("no")) {
+                return false;
+            } else {
+                System.out.println("Invalid input. Please enter 'y' (for yes) or 'n' (for no): ");
+            }
         }
     }
 
-    private boolean getYesNoInput() {
-        String input = scanner.next().toLowerCase().trim();
-        return input.equals("y") || input.equals("yes") || input.equals("j") || input.equals("ja");
-    }
-
+    // [MODIFIED] clearInputBuffer() is often no longer explicitly necessary, since nextLine() reads entire lines.
+    // However, it can remain as a "safety net" for unexpected scenarios. I’ll leave it here.
     private void clearInputBuffer() {
         scanner.nextLine();
     }
 
-    private void waitForUserInput(String message) {
+    // (MODIFIED) set to public, in case it is needed elsewhere in the code
+    public void waitForUserInput(String message) {
         System.out.print(message);
-        clearInputBuffer();
-        if (scanner.hasNextLine()) {
-            scanner.nextLine();
+        // clearInputBuffer();
+        // if (scanner.hasNextLine()) {
+            scanner.nextLine(); // just waits for the enter-key
         }
-    }
 
-    private int getLastInputAttempt() {
-        return -1; // Placeholder
-    }
+//   REMOVE - this method is not needed anymore, as the validation is now directly handled
+//    int the getValidatedInput()
+//    private int getLastInputAttempt() {
+//        return -1; // Placeholder
+//    }
 
     public void displayError(String message) {
         System.out.println("❌ Error: " + message);

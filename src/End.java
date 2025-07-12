@@ -1,13 +1,17 @@
 import java.util.*;
+import java.util.Scanner; // NEW - ADDED
 
 /**
  * Handles game ending, final scoring, and cleanup
  */
 public class End {
-    private Menu menu;
 
-    public End() {
-        menu = new Menu();
+    private Menu menu; // the menu object
+    private Scanner scanner; // NEW - ADDED
+
+    public End(Scanner sharedScanner) {
+        this.scanner = sharedScanner;
+        this.menu = new Menu(this.scanner);
     }
 
     /**
@@ -28,11 +32,11 @@ public class End {
      */
     private void displayFinalResults(Player winner, List<Player> players) {
         System.out.println("\n" + "★".repeat(60));
-        System.out.println("                    SPIEL BEENDET");
+        System.out.println("                    GAME OVER");
         System.out.println("★".repeat(60));
 
         System.out.println("\n🏆 CHAMPION: " + winner.getName());
-        System.out.println("   Endpunktzahl: " + winner.getTotalScore() + " Punkte");
+        System.out.println("   Final score: " + winner.getTotalScore() + " points");
 
         // Sort players by final score
         List<Player> sortedPlayers = new ArrayList<>(players);
@@ -46,7 +50,7 @@ public class End {
             String position = getPositionString(i + 1);
             String playerType = (player instanceof BotPlayer) ? "🤖" : "👤";
 
-            System.out.printf("%s %s %s: %d Punkte\n",
+            System.out.printf("%s %s %s: %d Points\n",
                     position, playerType, player.getName(), player.getTotalScore());
         }
     }
@@ -71,7 +75,7 @@ public class End {
      * @param players All players
      */
     private void displayStatistics(List<Player> players) {
-        System.out.println("\n📈 SPIEL-STATISTIKEN:");
+        System.out.println("\n📈 GAME STATISTICS:");
         System.out.println("-".repeat(40));
 
         // Calculate total rounds played (approximate)
@@ -81,13 +85,13 @@ public class End {
         }
         int estimatedRounds = Math.max(1, totalScore / 200); // Rough estimate
 
-        System.out.println("Geschätzte Rundenzahl: " + estimatedRounds);
+        System.out.println("Estimated number of rounds: " + estimatedRounds);
 
         // Show penalty statistics
-        System.out.println("\n⚠️ STRAF-STATISTIKEN:");
+        System.out.println("\n⚠️ PENALTY STATISTICS:");
         for (Player player : players) {
             String playerType = (player instanceof BotPlayer) ? "🤖" : "👤";
-            System.out.printf("   %s %s: %d Strafen\n",
+            System.out.printf("   %s %s: %d Penalties:\n",
                     playerType, player.getName(), player.getPenaltyCount());
         }
 
@@ -100,10 +104,10 @@ public class End {
                 .orElse(null);
 
         if (highestScorer != null && lowestScorer != null) {
-            System.out.println("\n🎯 SCORE-BEREICH:");
-            System.out.println("   Höchste Punktzahl: " + highestScorer.getTotalScore() +
+            System.out.println("\n🎯 SCORE RANGE:");
+            System.out.println("   Highest score: " + highestScorer.getTotalScore() +
                     " (" + highestScorer.getName() + ")");
-            System.out.println("   Niedrigste Punktzahl: " + lowestScorer.getTotalScore() +
+            System.out.println("   Lowest score: " + lowestScorer.getTotalScore() +
                     " (" + lowestScorer.getName() + ")");
         }
     }
@@ -113,13 +117,14 @@ public class End {
      */
     private void offerPlayAgain() {
         System.out.println("\n" + "=".repeat(50));
-        System.out.print("Möchtest du noch eine Runde spielen? (j/n): ");
+        System.out.print("Do you want to play another round? (y/n): ");
 
         Scanner scanner = new Scanner(System.in);
         String input = scanner.next().toLowerCase();
 
-        if (input.equals("j") || input.equals("ja") || input.equals("y") || input.equals("yes")) {
-            System.out.println("Neues Spiel wird gestartet...\n");
+        if (input.equalsIgnoreCase("j") || input.equalsIgnoreCase("ja") ||
+                input.equalsIgnoreCase("y") || input.equalsIgnoreCase("yes")) {
+            System.out.println("Starting a new game...\n");
             // This would trigger a new game in the main class
             restartGame();
         } else {
@@ -133,10 +138,10 @@ public class End {
     private void restartGame() {
         // In a complete implementation, this would communicate with Main
         // to restart the entire game process
-        System.out.println("🔄 Spiel wird neu gestartet...");
+        System.out.println("🔄 Restarting the game...");
 
         // For now, we'll just indicate that a restart was requested
-        System.out.println("(Neustart-Funktionalität würde hier implementiert werden)");
+        System.out.println("(Restart functionality would be implemented here)");
         displayFinalGoodbye();
     }
 
@@ -145,16 +150,16 @@ public class End {
      */
     private void displayFinalGoodbye() {
         System.out.println("\n" + "★".repeat(60));
-        System.out.println("             Danke fürs UNO spielen!");
-        System.out.println("                Bis zum nächsten Mal!");
+        System.out.println("             Thanks for playing UNO!");
+        System.out.println("                See you next time");
         System.out.println("★".repeat(60));
 
         // Display credits
-        System.out.println("\n💻 Entwickelt als Java-Lernprojekt");
-        System.out.println("🎮 Basierend auf den offiziellen UNO-Regeln");
-        System.out.println("📚 Version 1.0 - Konsolen-Edition");
+        System.out.println("\n💻 Developed as a Java learning project");
+        System.out.println("🎮 Based on the official UNO rules");
+        System.out.println("📚 Version 1.0 - Console Edition");
 
-        System.out.println("\n👋 Auf Wiedersehen!");
+        System.out.println("\n👋 Goodbye!");
     }
 
     /**
@@ -162,10 +167,10 @@ public class End {
      * @param players Current players
      */
     public void handleEarlyExit(List<Player> players) {
-        System.out.println("\n⏹️ Spiel wurde vorzeitig beendet.");
+        System.out.println("\n⏹️ Game was ended early.");
 
         if (!players.isEmpty()) {
-            System.out.println("\n📊 Aktueller Stand beim Beenden:");
+            System.out.println("\n📊 Current standings at exit:");
             displayCurrentScores(players);
         }
 
@@ -182,7 +187,7 @@ public class End {
 
         for (Player player : sortedPlayers) {
             String playerType = (player instanceof BotPlayer) ? "🤖" : "👤";
-            System.out.printf("   %s %s: %d Punkte\n",
+            System.out.printf("   %s %s: %d points\n",
                     playerType, player.getName(), player.getTotalScore());
         }
     }
@@ -194,7 +199,7 @@ public class End {
      * @return true if game should continue, false if game should end
      */
     public boolean handleRoundEnd(Player roundWinner, List<Player> players) {
-        System.out.println("\n🎊 Runde gewonnen von: " + roundWinner.getName());
+        System.out.println("\n🎊 Round won by: " + roundWinner.getName());
 
         // Check if anyone has won the game
         Player gameWinner = null;
@@ -211,10 +216,10 @@ public class End {
         }
 
         // Show current scores
-        System.out.println("\n📊 Zwischenstand:");
+        System.out.println("\n📊 Current scores:");
         displayCurrentScores(players);
 
-        System.out.println("\nNächste Runde beginnt...");
+        System.out.println("\nNext round starts...");
         return true; // Continue the game
     }
 }

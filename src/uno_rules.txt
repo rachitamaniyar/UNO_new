@@ -1,32 +1,33 @@
-UNO SPIELREGELN - Vollständige Anleitung
+UNO GAME RULES – Complete Guide
 
-SPIELZIEL:
-Erreiche als erster Spieler 500 Punkte über mehrere Runden.
+🎯 OBJECTIVE:
+Be the first player to reach 500 points over multiple rounds.
 
-SPIELVORBEREITUNG:
-- Jeder Spieler erhält 7 Karten
-- Restliche Karten bilden den Nachziehstapel
-- Oberste Karte wird aufgedeckt (Ablegestapel)
-- Zufälliger Startspieler wird gewählt
+🃏 GAME SETUP:
+- Each player is dealt 7 cards
+- The remaining cards form the draw pile
+- The top card is turned over (and becomes the discard pile)
+- A random player is chosen to start
 
-GRUNDREGELN:
-- Lege eine Karte passender Farbe oder Zahl
-- Kannst du nicht legen, ziehe eine Karte
-- Rufe "UNO" bei der vorletzten Karte!
+📌 BASIC RULES:
+- Play a card that matches the color or number (of the top card of the discard pile)
+- If you can’t play, draw one card
+- Say “UNO” when you have one card left!
+--> You may only play your final card if you called “UNO” beforehand
 
-AKTIONSKARTEN:
-+2 - Nächster Spieler zieht 2 Karten und setzt aus
-Aussetzen - Nächster Spieler wird übersprungen
-Richtungswechsel - Spielrichtung wird umgekehrt
-Farbwahl - Wähle eine neue Farbe
-+4 - Nur bei Notlage! Nächster zieht 4 Karten
+🚨 ACTION CARDS:
+- +2 – Next player draws 2 cards and skips their turn
+- Skip – Next player is skipped
+- Reverse – Reverses the direction of play
+- Wild – Choose a new color
+- Wild +4 – Only if you have no card of the current color! Next player draws 4 cards
 
-STRAFEN:
-- UNO vergessen: 2 Strafkarten
-- Falsche Karte: 1 Strafkarte
-- 3 Strafen = Disqualifikation
+⚠️ PENALTIES:
+- Forgot to call UNO: 2 penalty cards
+- Played an invalid card: 1 penalty card
+- 3 penalties = disqualification
 
-PUNKTE:
-Zahlenkarten: Nennwert
-Aktionskarten: 20 Punkte
-Spezielle Karten: 50 Punkte
+📈 SCORING:
+- Number cards: face value
+- Action cards: 20 points
+- Wild cards: 50 points

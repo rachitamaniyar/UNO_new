@@ -9,9 +9,15 @@ public class Initialization {
     private List<Player> players;
     private Deck deck;
     private int difficulty;
+    // [NEW] Reference to the shared scanner
+    private Scanner scanner;
 
-    public Initialization() {
-        menu = new Menu();
+    // [MODIFIED] Constructor now receives the scanner
+    public Initialization(Scanner scanner) {
+        // [NEW] Store scanner reference
+        this.scanner = scanner;
+        // [MODIFIED] Instantiate Menu object with the passed scanner
+        menu = new Menu(this.scanner);
         players = new ArrayList<>();
     }
 
@@ -40,8 +46,8 @@ public class Initialization {
         // Randomly select starting player
         int startingPlayer = selectStartingPlayer();
 
-        System.out.println("\n🎮 Spiel beginnt!");
-        System.out.println("Startspieler: " + players.get(startingPlayer).getName());
+        System.out.println("\n🎮 The game starts!");
+        System.out.println("Starting player: " + players.get(startingPlayer).getName());
 
         return new GameSetup(players, deck, startingPlayer, difficulty, specialRules);
     }
@@ -54,6 +60,7 @@ public class Initialization {
         // Get names for human players
         String[] humanNames = new String[0];
         if (numberOfHumans > 0) {
+            // (MODIFIED) menu.getPlayerNames() the menu intern scanner
             humanNames = menu.getPlayerNames(numberOfHumans);
         }
 
@@ -69,9 +76,9 @@ public class Initialization {
             players.add(new BotPlayer(botName, difficulty));
         }
 
-        System.out.println("\n👥 Spieler erstellt:");
+        System.out.println("\n👥 Players created:");
         for (Player player : players) {
-            String type = (player instanceof BotPlayer) ? "🤖 Bot" : "👤 Mensch";
+            String type = (player instanceof BotPlayer) ? "🤖 Bot" : "👤 Human";
             System.out.println("   " + type + ": " + player.getName());
         }
     }
@@ -80,7 +87,7 @@ public class Initialization {
      * Deals 7 cards to each player
      */
     private void dealInitialCards() {
-        System.out.println("\n🃏 Karten werden ausgeteilt...");
+        System.out.println("\n🃏 Dealing the cards...");
 
         // Deal 7 cards to each player
         for (int cardNum = 0; cardNum < 7; cardNum++) {
@@ -92,7 +99,7 @@ public class Initialization {
             }
         }
 
-        System.out.println("Jeder Spieler hat 7 Karten erhalten.");
+        System.out.println("Each player has received 7 cards.");
     }
 
     /**
@@ -108,7 +115,7 @@ public class Initialization {
      * Prepares a new round (clears hands, redeals cards)
      */
     public void prepareNewRound() {
-        System.out.println("\n🔄 Neue Runde wird vorbereitet...");
+        System.out.println("\n🔄 Preparing a new round...");
 
         // Clear all players' hands
         for (Player player : players) {
@@ -120,7 +127,7 @@ public class Initialization {
         dealInitialCards();
         deck.setupInitialCard();
 
-        System.out.println("Neue Runde bereit!");
+        System.out.println("New round is ready!");
     }
 
     /**

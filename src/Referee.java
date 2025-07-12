@@ -25,7 +25,7 @@ public class Referee {
     public boolean validateCardPlay(Card card, Card topCard, Player player) {
         // Basic rule check - can the card be played on the top card?
         if (!card.canPlayOn(topCard)) {
-            System.out.println("Ungültige Karte! " + card + " kann nicht auf " + topCard + " gelegt werden.");
+            System.out.println("Invalid card! " + card + " cannot be played on " + topCard + ".");
             penalizeFalseCardPlay(player);
             return false;
         }
@@ -61,7 +61,7 @@ public class Referee {
 
         if (hasMatchingColor) {
             // This is potentially a bluff - store this information
-            System.out.println(player.name + " spielt eine Zieh-Vier-Karte...");
+            System.out.println(player.name + " plays a Wild Draw Four card...");
             return true; // Allow the play, but it might be challenged
         }
 
@@ -74,8 +74,9 @@ public class Referee {
      * @param challengedPlayer The player who played Wild Draw Four
      * @param topCard The card that was on top before Wild Draw Four
      */
+    // challenges or doubts?! Both fit
     public void handleWildDrawFourChallenge(Player challenger, Player challengedPlayer, Card topCard) {
-        System.out.println(challenger.getName() + " zweifelt " + challengedPlayer.getName() + " an!");
+        System.out.println(challenger.getName() + " challenges " + challengedPlayer.getName() + " !");
 
         // Check if the challenged player was bluffing
         boolean wasBluffing = false;
@@ -87,7 +88,7 @@ public class Referee {
         }
 
         if (wasBluffing) {
-            System.out.println(challengedPlayer.getName() + " hat geblufft!");
+            System.out.println(challengedPlayer.getName() + " was bluffing!");
             // Challenged player draws 4 cards instead of challenger
             for (int i = 0; i < 4; i++) {
                 Card drawnCard = deck.drawCard();
@@ -97,7 +98,7 @@ public class Referee {
             }
             challengedPlayer.addPenalty();
         } else {
-            System.out.println(challengedPlayer.getName() + " hat nicht geblufft!");
+            System.out.println(challengedPlayer.getName() + " was not bluffing!");
             // Challenger draws 6 cards (4 + 2 penalty)
             for (int i = 0; i < 6; i++) {
                 Card drawnCard = deck.drawCard();
@@ -116,11 +117,11 @@ public class Referee {
      */
     public boolean checkUnoViolation(Player player) {
         if (player.getHandSize() == 1 && !player.hasSaidUno()) {
-            System.out.println(player.getName() + " hat vergessen UNO zu rufen!");
+            System.out.println(player.getName() + " forgot to call UNO!");
 
             // Give other players a chance to catch this
-            System.out.println("Hat jemand bemerkt, dass " + player.getName() + " UNO vergessen hat?");
-            System.out.println("Drücke 'j' wenn ja, beliebige andere Taste wenn nein:");
+            System.out.println("Did anyone notice that " + player.getName() + " forgot to call UNO?");
+            System.out.println("Press 'y' if yes, any other key if no.");
 
             // In a real game, other players would notice
             // For simulation, we'll have a random chance
@@ -136,7 +137,7 @@ public class Referee {
      * Applies penalty for UNO violation
      */
     private void penalizeUnoViolation(Player player) {
-        System.out.println(player.getName() + " muss 2 Strafkarten ziehen!");
+        System.out.println(player.getName() + " must draw 2 penalty cards!");
         for (int i = 0; i < 2; i++) {
             Card card = deck.drawCard();
             if (card != null) {
@@ -150,7 +151,7 @@ public class Referee {
      * Applies penalty for playing wrong card
      */
     private void penalizeFalseCardPlay(Player player) {
-        System.out.println(player.getName() + " muss 1 Strafkarte ziehen!");
+        System.out.println(player.getName() + " must draw 1 penalty card!");
         Card card = deck.drawCard();
         if (card != null) {
             player.addCard(card);
@@ -162,7 +163,7 @@ public class Referee {
      * Applies penalty for playing out of turn
      */
     public void penalizeOutOfTurn(Player player) {
-        System.out.println(player.getName() + " war nicht dran! 1 Strafkarte!");
+        System.out.println(player.getName() + " played out of turn! 1 penalty card for " + player.getName() + " !");
         Card card = deck.drawCard();
         if (card != null) {
             player.addCard(card);
@@ -177,21 +178,21 @@ public class Referee {
     public void calculateRoundScore(Player winner) {
         int totalPoints = 0;
 
-        System.out.println("\n=== RUNDENERGEBNIS ===");
-        System.out.println(winner.getName() + " hat die Runde gewonnen!");
+        System.out.println("\n=== ROUND RESULT ===");
+        System.out.println(winner.getName() + " has won the round!!");
 
         // Calculate points from all other players' hands
         for (Player player : players) {
             if (player != winner) {
                 int handPoints = player.calculateHandPoints();
                 totalPoints += handPoints;
-                System.out.println(player.getName() + " hat " + handPoints + " Punkte auf der Hand.");
+                System.out.println(player.getName() + " has " + handPoints + " points left in hand..");
             }
         }
 
         winner.addScore(totalPoints);
-        System.out.println(winner.getName() + " erhält " + totalPoints + " Punkte!");
-        System.out.println("Gesamtpunkte von " + winner.getName() + ": " + winner.getTotalScore());
+        System.out.println(winner.getName() + " receives " + totalPoints + " points!");
+        System.out.println("Total score for " + winner.getName() + ": " + winner.getTotalScore());
     }
 
     /**
@@ -216,7 +217,7 @@ public class Referee {
         for (Player player : players) {
             if (player.shouldBeDisqualified()) {
                 disqualified.add(player);
-                System.out.println(player.getName() + " wird wegen zu vieler Strafen disqualifiziert!");
+                System.out.println(player.getName() + " is disqualified due to too many penalties!");
             }
         }
         return disqualified;
@@ -226,13 +227,13 @@ public class Referee {
      * Displays current scores of all players
      */
     public void displayScores() {
-        System.out.println("\n=== AKTUELLE PUNKTE ===");
+        System.out.println("\n=== CURRENT SCORES ===");
         // Sort players by score for better display
         List<Player> sortedPlayers = new ArrayList<>(players);
         sortedPlayers.sort((p1, p2) -> Integer.compare(p2.getTotalScore(), p1.getTotalScore()));
 
         for (Player player : sortedPlayers) {
-            System.out.printf("%s: %d Punkte\n", player.getName(), player.getTotalScore());
+            System.out.printf("%s: %d points\n", player.getName(), player.getTotalScore());
         }
     }
 
@@ -249,7 +250,7 @@ public class Referee {
                 // Next player draws 2 cards and loses turn
                 int nextPlayer = getNextPlayerIndex(currentPlayerIndex, direction);
                 Player victim = players.get(nextPlayer);
-                System.out.println(victim.getName() + " muss 2 Karten ziehen und aussetzten!");
+                System.out.println(victim.getName() + " must draw 2 cards and skip their turn!");
 
                 for (int i = 0; i < 2; i++) {
                     Card drawnCard = deck.drawCard();
@@ -261,20 +262,20 @@ public class Referee {
 
             case REVERSE:
                 direction *= -1; // Reverse direction
-                System.out.println("Spielrichtung wird umgekehrt!");
+                System.out.println("Play direction is reversed!");
                 break;
 
             case SKIP:
                 // Next player loses their turn
                 nextPlayer = getNextPlayerIndex(currentPlayerIndex, direction);
-                System.out.println(players.get(nextPlayer).getName() + " muss aussetzen!");
+                System.out.println(players.get(nextPlayer).getName() + " must skip their turn!");
                 break;
 
             case WILD_DRAW_FOUR:
                 // Next player draws 4 cards and loses turn
                 nextPlayer = getNextPlayerIndex(currentPlayerIndex, direction);
                 victim = players.get(nextPlayer);
-                System.out.println(victim.getName() + " muss 4 Karten ziehen und aussetzen!");
+                System.out.println(victim.getName() + " must draw 4 cards and skip their turn!");
 
                 for (int i = 0; i < 4; i++) {
                     Card drawnCard = deck.drawCard();

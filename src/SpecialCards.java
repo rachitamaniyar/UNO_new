@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 /**
  * Handles the logic for special action cards
  * Contains methods for each special card type's behavior
@@ -10,17 +12,17 @@ public class SpecialCards {
      * @param deck The game deck
      */
     public static void processDrawTwo(Player targetPlayer, Deck deck) {
-        System.out.println(targetPlayer.getName() + " muss 2 Karten ziehen!");
+        System.out.println(targetPlayer.getName() + " must draw 2 cards!");
 
         for (int i = 0; i < 2; i++) {
             Card drawnCard = deck.drawCard();
             if (drawnCard != null) {
                 targetPlayer.addCard(drawnCard);
-                System.out.println(targetPlayer.getName() + " zieht: " + drawnCard);
+                System.out.println(targetPlayer.getName() + " draws: " + drawnCard);
             }
         }
 
-        System.out.println(targetPlayer.getName() + " setzt diese Runde aus.");
+        System.out.println(targetPlayer.getName() + " is skipped this round.");
     }
 
     /**
@@ -30,12 +32,12 @@ public class SpecialCards {
      */
     public static int processReverse(int currentDirection) {
         int newDirection = currentDirection * -1;
-        System.out.println("🔄 Spielrichtung wird umgekehrt!");
+        System.out.println("🔄 Play direction is reversed!");
 
         if (newDirection == 1) {
-            System.out.println("Spiel läuft jetzt im Uhrzeigersinn.");
+            System.out.println("The game now proceeds clockwise.");
         } else {
-            System.out.println("Spiel läuft jetzt gegen den Uhrzeigersinn.");
+            System.out.println("The game now proceeds counterclockwise.");
         }
 
         return newDirection;
@@ -46,18 +48,19 @@ public class SpecialCards {
      * @param skippedPlayer The player who must skip their turn
      */
     public static void processSkip(Player skippedPlayer) {
-        System.out.println("⏭️ " + skippedPlayer.getName() + " muss aussetzen!");
+        System.out.println("⏭️ " + skippedPlayer.getName() + " must skip their turn!!");
     }
 
     /**
      * Processes Wild card effects
      * @param player The player who played the wild card
      * @param wildCard The wild card (to set its color)
+     * @param chosenColor The color chosen by the player
      */
-    public static void processWild(Player player, Card wildCard) {
-        CardColor chosenColor = player.chooseColor();
+    public static void processWild(Player player, Card wildCard, CardColor chosenColor) {
+        // Die Farbe wurde bereits in Run ermittelt und übergeben.
         wildCard.setColor(chosenColor);
-        System.out.println("🎨 " + player.getName() + " wählt " + chosenColor + " als neue Farbe!");
+        System.out.println("🎨 " + player.getName() + " chooses " + chosenColor + " as new color!");
     }
 
     /**
@@ -66,25 +69,26 @@ public class SpecialCards {
      * @param targetPlayer The next player who must draw
      * @param wildDrawFour The card (to set its color)
      * @param deck The game deck
+     * @param chosenColor The color chosen by the player
      */
-    public static void processWildDrawFour(Player player, Player targetPlayer, Card wildDrawFour, Deck deck) {
-        // First, let player choose color
-        CardColor chosenColor = player.chooseColor();
+    public static void processWildDrawFour(Player player, Player targetPlayer, Card wildDrawFour, Deck deck, CardColor chosenColor) {
+        // (REMOVED) First, let player choose color
+        // CardColor chosenColor = player.chooseColor();
         wildDrawFour.setColor(chosenColor);
-        System.out.println("🎨 " + player.getName() + " wählt " + chosenColor + " als neue Farbe!");
+        System.out.println("🎨 " + player.getName() + " chooses " + chosenColor + " as new color!");
 
         // Then make target player draw 4 cards
-        System.out.println("📚 " + targetPlayer.getName() + " muss 4 Karten ziehen!");
+        System.out.println("📚 " + targetPlayer.getName() + " must draw 4 cards!");
 
         for (int i = 0; i < 4; i++) {
             Card drawnCard = deck.drawCard();
             if (drawnCard != null) {
                 targetPlayer.addCard(drawnCard);
-                System.out.println(targetPlayer.getName() + " zieht: " + drawnCard);
+                System.out.println(targetPlayer.getName() + " draws: " + drawnCard);
             }
         }
 
-        System.out.println(targetPlayer.getName() + " setzt diese Runde aus.");
+        System.out.println(targetPlayer.getName() + " skipps this round.");
     }
 
     /**
@@ -107,18 +111,21 @@ public class SpecialCards {
      * @param startingPlayerIndex The player who would go first
      * @param players All players in the game
      * @param deck The game deck
+     * @param menu The shared Menu instance (for human color choice) // NEUER PARAMETER
+     * @param scanner The shared Scanner instance (for human color choice) // NEUER PARAMETER
      * @return Adjusted starting direction and player info
      */
     public static GameStartInfo handleStartingSpecialCard(Card firstCard, int startingPlayerIndex,
-                                                          Player[] players, Deck deck) {
+                                                          Player[] players, Deck deck, Menu menu, Scanner scanner) {
         GameStartInfo info = new GameStartInfo();
         info.direction = 1; // Default direction
         info.currentPlayerIndex = startingPlayerIndex;
 
         switch (firstCard.getType()) {
             case DRAW_TWO:
-                System.out.println("⚠️ Startkarte ist Zieh-2! Der erste Spieler muss 2 Karten ziehen!");
-                processDrawTwo(players[startingPlayerIndex], deck);
+                System.out.println("⚠️ Starting card is a Draw Two! The first player must draw 2 cards!");
+                // (MODIFIED) processDrawTwo(players[startingPlayerIndex], deck);
+                deck.drawCards(players[startingPlayerIndex], 2);
                 info.skipFirstPlayer = true;
                 break;
 
@@ -127,22 +134,33 @@ public class SpecialCards {
                 break;
 
             case SKIP:
-                System.out.println("⚠️ Startkarte ist Aussetzen! Der erste Spieler wird übersprungen!");
+                System.out.println("⚠️ Starting card is a Skip! The first player is skipped!");
                 processSkip(players[startingPlayerIndex]);
                 info.skipFirstPlayer = true;
                 break;
 
             case WILD:
-                // First player chooses color
-                CardColor color = players[startingPlayerIndex].chooseColor();
-                firstCard.setColor(color);
-                System.out.println("🎨 " + players[startingPlayerIndex].getName() +
-                        " wählt " + color + " als Startfarbe!");
+//                // First player chooses color
+//                CardColor color = players[startingPlayerIndex].chooseColor();
+//                firstCard.setColor(color);
+//                System.out.println("🎨 " + players[startingPlayerIndex].getName() +
+//                        " chooses " + color + " as the starting color!");
+                // GEÄNDERT: Ermittelt Farbe abhängig vom Spielertyp
+                Player affectedPlayer = players[startingPlayerIndex];
+                CardColor chosenColor;
+                if (affectedPlayer instanceof BotPlayer) {
+                    chosenColor = ((BotPlayer) affectedPlayer).chooseColor();
+                } else {
+                    chosenColor = menu.chooseColor(scanner);
+                }
+                firstCard.setColor(chosenColor);
+                System.out.println("🎨 " + affectedPlayer.getName() +
+                        " chooses " + chosenColor + " as the starting color!");
                 break;
 
             case WILD_DRAW_FOUR:
                 // This should not happen as we prevent it in Deck.setupInitialCard()
-                System.out.println("❌ Fehler: Zieh-4-Karte als Startkarte ist nicht erlaubt!");
+                System.out.println("❌ Error: A Wild Draw Four card is not allowed as a starting card!\"");
                 break;
         }
 
