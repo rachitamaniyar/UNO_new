@@ -47,8 +47,7 @@ public class Initialization {
         int startingPlayer = selectStartingPlayer();
 
         System.out.println("\n🎮 The game starts!");
-        System.out.println("Starting player: " + players.get(startingPlayer).getName());
-
+        System.out.println("Players: " + players.size());
         return new GameSetup(players, deck, startingPlayer, difficulty, specialRules);
     }
 

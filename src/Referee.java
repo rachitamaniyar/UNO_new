@@ -61,7 +61,6 @@ public class Referee {
 
         if (hasMatchingColor) {
             // This is potentially a bluff - store this information
-            System.out.println(player.name + " plays a Wild Draw Four card...");
             return true; // Allow the play, but it might be challenged
         }
 

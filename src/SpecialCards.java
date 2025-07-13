@@ -88,7 +88,7 @@ public class SpecialCards {
             }
         }
 
-        System.out.println(targetPlayer.getName() + " skipps this round.");
+        System.out.println(targetPlayer.getName() + " skips this round.");
     }
 
     /**
