@@ -43,7 +43,7 @@ public class Main {
             }
         }
 
-        // Close scanner and menu before exiting to release resources
+        // Close the scanner and menu before exiting to release resources
         scanner.close();
         gameMenu.close();
 

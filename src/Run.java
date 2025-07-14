@@ -75,7 +75,20 @@ public class Run {
                 break;
             }
         }
+        if (dbManager != null && sessionId > 0) {
+            try {
+                String winnerName = getWinnerNameOrDraw();
+                dbManager.finalizeSession(sessionId, winnerName, roundNumber);
+            } catch (Exception e) {
+                System.err.println("❌ Could not finalize session in database: " + e.getMessage());
+            }
+        }
         System.out.println("Game over.");
+    }
+    private String getWinnerNameOrDraw() {
+        Player winner = referee.checkGameWinner();
+        if (winner != null) return winner.getName();
+        return "DRAW";
     }
 
     private boolean isDeckCompletelyEmpty() {
@@ -348,6 +361,7 @@ public class Run {
     private void handleGameWin(Player winner) {
         System.out.println("\n🏆 " + winner.getName() + " has won the entire game!");
         menu.displayGameResults(winner, players);
+        gameRunning = false;
         // --- DATABASE INTEGRATION: Finalize session ---
         if (dbManager != null && sessionId > 0) {
             try {
