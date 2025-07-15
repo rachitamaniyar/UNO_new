@@ -11,18 +11,15 @@ public class Player {
     protected int penaltyCount;         // Number of penalties received
     protected boolean saidUno;          // Whether player said UNO
 
-    // (REMOVED) - Scanner does not anymore belong directly into the Players-Class
-   // protected static Scanner scanner = new Scanner(System.in); // Shared scanner to avoid resource conflicts
-
     /**
      * Constructor for creating a new player
-     * @param name The player's name
+     * @param name The user should enter the player's name, other variables are automatically created.
      */
     public Player(String name) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Player name cannot be null or empty");
         }
-        this.name = name.trim();
+        this.name = name.trim(); //to remove any spaces
         this.hand = new ArrayList<>();  // ArrayList implements List interface
         this.totalScore = 0;
         this.penaltyCount = 0;
@@ -50,22 +47,11 @@ public class Player {
      * @return The removed card, or null if index is invalid
      */
     public Card playCard(int index) {
-        // (MODIFIED) Better Exception-Handling (instead of returning null)
+        //Exception-Handling (instead of returning null)
         if (index < 0 || index >= hand.size()) {
             throw new IndexOutOfBoundsException("Invalid card index: " + index);
         }
-        Card playedCard = hand.remove(index);
-
-        // [REMOVED] The UNO check does not belong here.
-        // It should occur after a successful card play,
-        // either in the Run class or the Referee class.
-// if (hand.size() == 1 && !saidUno) {
-//     System.out.println(name + " forgot to call UNO!");
-//     // Could add penalty here if needed
-// }
-
-
-        return playedCard;
+        return hand.remove(index);
     }
 
     /**
@@ -80,94 +66,6 @@ public class Player {
         }
         System.out.println("0. Draw a card"); // Option to draw is for ONLY human players
     }
-
-//    /**
-//     * Gets the player's choice for which card to play
-//     *
-//     * @param topCard The current top card for reference
-//     */
-    // [REMOVED] The getCardChoice() method does not belong in the Player class.
-    // It handles player interaction and should be managed by the RUN class
-    // or a HumanPlayer subclass (which we don't have) using the central scanner.
-//    public int getCardChoice(Card topCard) {
-//        int maxAttempts = 3;
-//        int attempts = 0;
-//
-//        while (attempts < maxAttempts) {
-//            try {
-//                System.out.println("\nCurrent card: " + topCard);
-//                displayHand();
-//                System.out.print("Choose a card (enter number): ");
-//
-//                int choice = scanner.nextInt();
-//                scanner.nextLine(); // Clear the newline character
-//
-//                // Validate choice range
-//                if (choice == 0) {
-//                    return -1; // Draw card
-//                } else if (choice >= 1 && choice <= hand.size()) {
-//                    return choice - 1; // Convert to 0-based index
-//                } else {
-//                    System.out.println("Invalid choice! Please enter a number between 0 and " + hand.size() + " eingeben.");
-//                    attempts++;
-//                }
-//
-//            } catch (InputMismatchException e) {
-//                // Handle invalid input (non-integer)
-//                scanner.nextLine(); // Clear the invalid input
-//                System.out.println("Invalid input! Please enter a number.");
-//                attempts++;
-//            }
-//        }
-//
-//        System.out.println("Too many invalid attempts. A penalty card will be drawn automatically.");
-//        return -1; // Default to drawing a card
-//    }
-
-
-    // [REMOVED] The chooseColor() method does not belong in the Player class.
-    // It handles player interaction and should be managed by the Run class
-    // or a HumanPlayer subclass (which we dont have) using the central scanner,
-    // by calling the Menu.chooseColor(scanner) method.
-//    /**
-//     * Asks player to choose a color for wild cards
-//     * @return The chosen color
-//     */
-//    public CardColor chooseColor() {
-//        int maxAttempts = 3;
-//        int attempts = 0;
-//
-//        while (attempts < maxAttempts) {
-//            try {
-//                System.out.println("\nChoose a color: ");
-//                System.out.println("1. Red");
-//                System.out.println("2. Yellow");
-//                System.out.println("3. Green");
-//                System.out.println("4. Blue");
-//                System.out.print("Your choice: ");
-//
-//                int choice = scanner.nextInt();
-//                scanner.nextLine(); // Clear the newline character
-//
-//                switch (choice) {
-//                    case 1: return CardColor.RED;
-//                    case 2: return CardColor.YELLOW;
-//                    case 3: return CardColor.GREEN;
-//                    case 4: return CardColor.BLUE;
-//                    default:
-//                        System.out.println("Invalid input! Please enter a number between 1 and 4.");
-//                        attempts++;
-//                }
-//            } catch (InputMismatchException e) {
-//                scanner.nextLine();
-//                System.out.println("Invalid input! Please enter a number.");
-//                attempts++;
-//            }
-//        }
-//
-//        System.out.println("Too many invalid attempts. Red will be selected automatically.");
-//        return CardColor.RED;
-//    }
 
     /**
      * Handles the UNO call when player has one card left
@@ -185,14 +83,8 @@ public class Player {
      * Checks if player forgot to call UNO and applies penalty if needed
      * @return true if penalty was applied
      */
+    //UNUSED
     public boolean checkUnoViolation() {
-        // [MODIFIED] Method is now purely a validation function
-        // Output and penalty should be handled in Referee or Run
-//        if (hand.size() == 1 && !saidUno) {
-//            System.out.println(name + " forgot to call UNO and must draw 2 cards!");
-//            return true;
-//        }
-//        return false;
         return hand.size() == 1 && !saidUno;
     }
 
@@ -215,6 +107,7 @@ public class Player {
      * @param topCard The current top card
      * @return true if player has a playable card
      */
+    //UNUSED
     public boolean hasPlayableCard(Card topCard) {
         if (topCard == null) return false;
 
@@ -231,6 +124,7 @@ public class Player {
      * @param topCard The current top card
      * @return List of indices of playable cards
      */
+    //UNUSED
     public List<Integer> getPlayableCardIndices(Card topCard) {
         List<Integer> playableIndices = new ArrayList<>();
         for (int i = 0; i < hand.size(); i++) {
@@ -261,27 +155,16 @@ public class Player {
      * Checks if player's hand is empty (won the round)
      * @return true if hand is empty
      */
+    //UNUSED
     public boolean hasWon() {
         return hand.isEmpty();
     }
-
-    // Getter and setter methods
-    public String getName() { return name; }
-    public List<Card> getHand() { return new ArrayList<>(hand); } // Return copy to prevent external modification
-    public int getHandSize() { return hand.size(); }
-    public int getTotalScore() { return totalScore; }
-    public boolean hasSaidUno() { return saidUno; }
-    public int getPenaltyCount() { return penaltyCount; }
 
     public void addScore(int points) {
         if (points >= 0) {
             totalScore += points;
         }
     }
-
-    public void setSaidUno(boolean saidUno) { this.saidUno = saidUno; }
-    public void resetPenalties() { penaltyCount = 0; }
-
     /**
      * Clears the player's hand for a new round
      */
@@ -289,6 +172,18 @@ public class Player {
         hand.clear();
         saidUno = false;
     }
+    // Getter and setter methods
+    public String getName() { return name; }
+    public List<Card> getHand() { return new ArrayList<>(hand); } // Return copy to prevent external modification
+    public int getHandSize() { return hand.size(); }
+    public int getTotalScore() { return totalScore; }
+
+    public boolean hasSaidUno() { return saidUno; }
+
+    public int getPenaltyCount() { return penaltyCount; }
+    public void setSaidUno(boolean saidUno) { this.saidUno = saidUno; }
+
+    public void resetPenalties() { penaltyCount = 0; }
 
     @Override
     public String toString() {

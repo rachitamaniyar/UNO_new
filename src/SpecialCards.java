@@ -22,7 +22,7 @@ public class SpecialCards {
             }
         }
 
-        System.out.println(targetPlayer.getName() + " is skipped this round.");
+        System.out.println(targetPlayer.getName() + " skipped this round.");
     }
 
     /**
@@ -58,7 +58,7 @@ public class SpecialCards {
      * @param chosenColor The color chosen by the player
      */
     public static void processWild(Player player, Card wildCard, CardColor chosenColor) {
-        // Die Farbe wurde bereits in Run ermittelt und übergeben.
+        //The color has already been determined in Run and transferred.
         wildCard.setColor(chosenColor);
         System.out.println("🎨 " + player.getName() + " chooses " + chosenColor + " as new color!");
     }
@@ -71,12 +71,10 @@ public class SpecialCards {
      * @param deck The game deck
      * @param chosenColor The color chosen by the player
      */
-    public static void processWildDrawFour(Player player, Player targetPlayer, Card wildDrawFour, Deck deck, CardColor chosenColor) {
-        // (REMOVED) First, let player choose color
+    public static void processWildDrawFour(Player player, Player targetPlayer, Card wildDrawFour,
+                                           Deck deck, CardColor chosenColor) {
         // CardColor chosenColor = player.chooseColor();
-        wildDrawFour.setColor(chosenColor);
-        System.out.println("🎨 " + player.getName() + " chooses " + chosenColor + " as new color!");
-
+        processWild(player, wildDrawFour, chosenColor);
         // Then make target player draw 4 cards
         System.out.println("📚 " + targetPlayer.getName() + " must draw 4 cards!");
 
@@ -140,12 +138,6 @@ public class SpecialCards {
                 break;
 
             case WILD:
-//                // First player chooses color
-//                CardColor color = players[startingPlayerIndex].chooseColor();
-//                firstCard.setColor(color);
-//                System.out.println("🎨 " + players[startingPlayerIndex].getName() +
-//                        " chooses " + color + " as the starting color!");
-                // GEÄNDERT: Ermittelt Farbe abhängig vom Spielertyp
                 Player affectedPlayer = players[startingPlayerIndex];
                 CardColor chosenColor;
                 if (affectedPlayer instanceof BotPlayer) {

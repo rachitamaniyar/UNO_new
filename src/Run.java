@@ -408,7 +408,7 @@ public class Run {
 
     private void skipNextPlayer() {
         moveToNextPlayer();
-        System.out.println("Next player is skipped!");
+       // System.out.println("Next player is skipped!");
     }
 
     private boolean checkGameEndConditions() {

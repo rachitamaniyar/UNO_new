@@ -5,8 +5,8 @@ public class Card {
      * This class encapsulates all card-related data and behavior
      */
         private CardColor color;
-        private CardType type;
-        private int points; // Punktwert für Punkteberechnung
+        private final CardType type;
+        private final int points; // Punktwert für Punkteberechnung
 
         /**
          * Constructor for creating a card
@@ -16,7 +16,7 @@ public class Card {
         public Card(CardColor color, CardType type) {
             this.color = color;
             this.type = type;
-            this.points = calculatePoints(); // Automatically calculate points based on card type
+            this.points = calculatePoints(); // Automatically calculate points based on the card type
         }
 
 
@@ -41,10 +41,10 @@ public class Card {
                 case DRAW_TWO:
                 case REVERSE:
                 case SKIP:
-                    return 20; // Farbige Aktionskarten = 20 Punkte
+                    return 20; // Colored Action Cards = 20 Punkte
                 case WILD:
                 case WILD_DRAW_FOUR:
-                    return 50; // Schwarze Spezialkarten = 50 Punkte
+                    return 50; // Black Action Cards = 50 Punkte
                 default:
                     return 0;
             }

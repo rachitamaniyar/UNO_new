@@ -10,7 +10,7 @@ public class BotPlayer extends Player {
 
     /**
      * Constructor for bot player with difficulty level
-     * @param name Bot's name
+     * @param name Bots name
      * @param difficulty Difficulty level (1-3)
      */
     public BotPlayer(String name, int difficulty) {
@@ -38,7 +38,7 @@ public class BotPlayer extends Player {
     public int getCardChoice(Card topCard) {
         System.out.println("\n It's " + name + "'s turn.");
 
-        // Simulate thinking time
+        // Simulates thinking time
         try {
             Thread.sleep(1000 + random.nextInt(1000)); // Sleep 1-2 seconds
         } catch (InterruptedException e) {
@@ -69,9 +69,6 @@ public class BotPlayer extends Player {
             // the callUNO() sets the flag according to the bot-logic
             callUno();
         }
-
-        // (REMOVED) the print of the turn - should be in RUN after the actual card has been playes
-        // System.out.println(name + " plays: " + hand.get(chosenIndex));
         return chosenIndex;
     }
 
@@ -135,7 +132,7 @@ public class BotPlayer extends Player {
      * Chooses based on the most common color in hand
      */
     public CardColor chooseColor() {
-        // Count colors in hand
+        // Count colors in the hand
         Map<CardColor, Integer> colorCount = new HashMap<>();
         colorCount.put(CardColor.RED, 0);
         colorCount.put(CardColor.YELLOW, 0);
@@ -143,18 +140,16 @@ public class BotPlayer extends Player {
         colorCount.put(CardColor.BLUE, 0);
 
         for (Card card : hand) {
-            // (MODIFIED)
             if (card.getColor() != CardColor.BLACK) {
                 colorCount.put(card.getColor(), colorCount.get(card.getColor()) + 1);
             }
         }
 
-        // (MODIFIED)
         // Find the most common color
         CardColor mostCommon = CardColor.RED;
-        int maxCount = -1; // starting with -1, to also process 0-count colours
+        int maxCount = -1; // starting with -1, to also process 0-count colors
 
-        // if the hand is empty or holds only wild-cards, chose a colour randomly
+        // if the hand is empty or holds only wild-cards, chose a color randomly
         if (hand.isEmpty() || colorCount.values().stream().allMatch(count -> count == 0)) {
             CardColor[] colors = {CardColor.RED, CardColor.YELLOW, CardColor.GREEN, CardColor.BLUE};
             mostCommon = colors[random.nextInt(colors.length)];
